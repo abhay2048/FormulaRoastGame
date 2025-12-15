@@ -2,7 +2,7 @@ body {
   background: #0b0b0b;
   color: #f1f1f1;
   font-family: Arial, sans-serif;
-  text-align: center; /* Centers h1, h2, p, and the buttons div content */
+  text-align: center; 
 }
 
 /* Add a max-width and center the main container for better layout */
@@ -35,7 +35,7 @@ input {
   grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   max-width: 420px;
-  margin: 10px auto; /* Centers the keyboard container */
+  margin: 10px auto; 
 }
 
 #keyboard button {
@@ -45,9 +45,9 @@ input {
 /* Style for the formula sheet in 'learn' mode */
 #content ul {
   max-width: 600px;
-  margin: 20px auto; /* Center the list itself */
+  margin: 20px auto; 
   text-align: left;
-  list-style: none; /* Remove bullet points */
+  list-style: none; 
   padding-left: 0;
 }
 
