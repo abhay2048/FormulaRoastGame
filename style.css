@@ -2,15 +2,14 @@ body {
   background: #0b0b0b;
   color: #f1f1f1;
   font-family: Arial, sans-serif;
-  text-align: center;
+  text-align: center; /* Centers h1, h2, p, and the buttons div content */
 }
 
-.screen {
-  display: none;
-}
-
-.screen.active {
-  display: block;
+/* Add a max-width and center the main container for better layout */
+#game-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 button {
@@ -25,26 +24,36 @@ input {
   font-size: 18px;
   width: 70%;
   max-width: 420px;
+  /* Centering Fix for Input: Set to block and use margin auto */
+  display: block; 
+  margin: 10px auto; 
 }
 
+/* Fix for the special keyboard layout and centering */
 #keyboard {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   max-width: 420px;
-  margin: 10px auto;
+  margin: 10px auto; /* Centers the keyboard container */
 }
 
 #keyboard button {
   padding: 8px;
 }
 
-#formulaList {
-  max-width: 800px;
-  margin: auto;
+/* Style for the formula sheet in 'learn' mode */
+#content ul {
+  max-width: 600px;
+  margin: 20px auto; /* Center the list itself */
   text-align: left;
+  list-style: none; /* Remove bullet points */
+  padding-left: 0;
 }
 
-#formulaList div {
-  margin: 6px 0;
+#content li {
+  margin-bottom: 8px;
+  padding: 4px;
+  background: #1c1c1c;
+  border-radius: 4px;
 }
