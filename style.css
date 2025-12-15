@@ -1,0 +1,50 @@
+body {
+  background: #0b0b0b;
+  color: #f1f1f1;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+button {
+  padding: 10px 16px;
+  font-size: 16px;
+  margin: 6px;
+  cursor: pointer;
+}
+
+input {
+  padding: 10px;
+  font-size: 18px;
+  width: 70%;
+  max-width: 420px;
+}
+
+#keyboard {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-width: 420px;
+  margin: 10px auto;
+}
+
+#keyboard button {
+  padding: 8px;
+}
+
+#formulaList {
+  max-width: 800px;
+  margin: auto;
+  text-align: left;
+}
+
+#formulaList div {
+  margin: 6px 0;
+}
