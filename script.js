@@ -7,21 +7,27 @@ let mode = "test";
 /* ---------------- LOAD FORMULAS ---------------- */
 
 async function loadFormulas() {
-  const res = await fetch("maths.txt");
-  const text = await res.text();
+  try {
+    const res = await fetch("maths.txt");
+    if (!res.ok) throw new Error("maths.txt not found or failed to load.");
+    const text = await res.text();
 
-  formulas = text
-    .split("\n")
-    .map(l => l.trim())
-    .filter(l => l && l.includes("="))
-    .map(l => {
-      const parts = l.split("=");
-      const lhs = parts.shift().trim();
-      const rhs = parts.join("=").trim();
-      return { lhs, rhs };
-    });
+    formulas = text
+      .split(/\r?\n/) // handles LF and CRLF
+      .map(l => l.trim())
+      .filter(l => l && l.includes("="))
+      .map(l => {
+        const parts = l.split("=");
+        const lhs = parts.shift().trim();
+        const rhs = parts.join("=").trim();
+        return { lhs, rhs };
+      });
 
-  startIntro();
+    startIntro();
+  } catch (err) {
+    alert("Error loading formulas: " + err.message);
+    console.error(err);
+  }
 }
 
 loadFormulas();
@@ -60,6 +66,7 @@ function startTest() {
   mode = "test";
   chances = 3;
   score = 0;
+  updateStats();
   nextQuestion();
 }
 
@@ -75,7 +82,6 @@ function nextQuestion() {
 
 function submitAnswer() {
   const user = document.getElementById("answer").value.trim();
-
   if (!user) return;
 
   if (normalize(user) === normalize(current.rhs)) {
@@ -105,6 +111,7 @@ function normalize(str) {
   return str
     .replace(/\s+/g, "")
     .replace(/[()]/g, "")
+    .replace(/√/g, "sqrt") // optional mapping for square roots
     .toLowerCase();
 }
 
@@ -128,30 +135,22 @@ function showButtons(buttons) {
   });
 }
 
-/* ---------------- ROAST ENGINE ---------------- */
+/* ---------------- SARCASTIC ROAST ENGINE ---------------- */
 
-const winRoasts = [
-  "Oh wow. A correct answer. Mark the calendar.",
-  "Look at you pretending you studied.",
-  "That was right. Don’t let it get to your head.",
-  "Even a broken clock is right sometimes.",
-  "I’m shocked. Genuinely."
-];
+const adjectives = ["bold", "tragic", "confident", "brave", "desperate"];
+const verbs = ["typed", "guessed", "clicked", "entered", "pretended"];
+const exclamations = ["Wow", "Hmm", "Oh really", "Yikes", "Look at that"];
 
-const failRoasts = [
-  "That answer was confident… and wrong.",
-  "You typed that like it owed you money.",
-  "Interesting choice. Incorrect, but interesting.",
-  "I admire the bravery. Not the accuracy.",
-  "Math just sighed."
-];
+function randomElement(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 function getWinRoast() {
-  return winRoasts[Math.floor(Math.random() * winRoasts.length)];
+  return `${randomElement(exclamations)}! That was ${randomElement(adjectives)} and correct.`;
 }
 
 function getFailRoast() {
-  return failRoasts[Math.floor(Math.random() * failRoasts.length)];
+  return `${randomElement(exclamations)}… you ${randomElement(verbs)} like a fool. Incorrect!`;
 }
 
 /* ---------------- KEYBOARD SUPPORT ---------------- */
