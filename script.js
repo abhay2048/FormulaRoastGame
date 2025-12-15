@@ -4,45 +4,34 @@ let chances = 3;
 let score = 0;
 let mode = "test";
 
-let failRoasts = [];
-let winRoasts = [];
+/* ---------------- LOAD FORMULAS ---------------- */
 
-/* ---------------- LOAD FORMULAS & ROASTS ---------------- */
-async function loadResources() {
-  try {
-    // Load formulas
-    const resFormulas = await fetch("maths.txt");
-    const textFormulas = await resFormulas.text();
-    formulas = textFormulas
-      .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(l => l && l.includes("="))
-      .map(l => {
-        const parts = l.split("=");
-        const lhs = parts.shift().trim();
-        const rhs = parts.join("=").trim();
-        return { lhs, rhs };
-      });
+async function loadFormulas() {
+  const res = await fetch("maths.txt");
+  const text = await res.text();
 
-    // Load roasts
-    const resRoasts = await fetch("roasts.txt");
-    const textRoasts = await resRoasts.text();
-    let allRoasts = textRoasts.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    // Split into win/fail halves
-    winRoasts = allRoasts.slice(0, Math.floor(allRoasts.length / 2));
-    failRoasts = allRoasts.slice(Math.floor(allRoasts.length / 2));
+  formulas = text
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l && l.includes("="))
+    .map(l => {
+      const parts = l.split("=");
+      const lhs = parts.shift().trim();
+      const rhs = parts.join("=").trim();
+      return { lhs, rhs };
+    });
 
-    startIntro();
-  } catch (err) {
-    alert("Error loading resources: " + err.message);
-    console.error(err);
-  }
+  startIntro();
 }
 
-loadResources();
+loadFormulas();
 
 /* ---------------- INTRO ---------------- */
+
 function startIntro() {
+  // Clear any content from previous modes
+  document.getElementById("content").innerHTML = ""; 
+  
   setText("Do you want to learn or jump straight into the test?");
   showButtons([
     { text: "Learn", action: showLearning },
@@ -51,38 +40,62 @@ function startIntro() {
 }
 
 /* ---------------- LEARNING MODE ---------------- */
+
 function showLearning() {
   mode = "learn";
+  // Clear the question text area
+  setText(""); 
+  
   let content = "<h3>Formula Sheet</h3><ul>";
+
   formulas.forEach(f => {
     content += `<li><b>${f.lhs}</b> = ${f.rhs}</li>`;
   });
+
   content += "</ul>";
   document.getElementById("content").innerHTML = content;
 
-  showButtons([{ text: "Start Test", action: startTest }]);
+  showButtons([
+    { text: "Start Test", action: startTest },
+    { text: "Menu", action: startIntro } // Added button to return to menu
+  ]);
 }
 
 /* ---------------- TEST MODE ---------------- */
+
 function startTest() {
   mode = "test";
   chances = 3;
   score = 0;
-  updateStats();
+  // Clear the formula list area
+  document.getElementById("content").innerHTML = ""; 
   nextQuestion();
 }
 
 function nextQuestion() {
   current = formulas[Math.floor(Math.random() * formulas.length)];
+  
+  // Ensure the answer input is visible and the cursor is focused
+  document.getElementById("answer").style.display = "block";
+  document.getElementById("answer").focus();
+
   setText(`Complete this:\n\n${current.lhs} = ?`);
   document.getElementById("answer").value = "";
   updateStats();
+  
+  // ADDED: Dynamically show the submit and quit buttons for the test
+  showButtons([
+    { text: "Submit", action: submitAnswer },
+    { text: "Quit", action: startIntro }
+  ]);
 }
 
 /* ---------------- SUBMIT ANSWER ---------------- */
+
 function submitAnswer() {
   const user = document.getElementById("answer").value.trim();
-  if (!user) return;
+
+  if (!user || mode !== "test") return; // Added mode check
 
   if (normalize(user) === normalize(current.rhs)) {
     score++;
@@ -92,13 +105,21 @@ function submitAnswer() {
     chances--;
     if (chances > 0) {
       setText(getFailRoast() + `\nChances left: ${chances}`);
+      // Re-display the submit/quit buttons after the toast
+      showButtons([
+        { text: "Submit", action: submitAnswer },
+        { text: "Quit", action: startIntro }
+      ]);
     } else {
+      // Game Over state
+      document.getElementById("answer").style.display = "none";
       setText(
         `You’re done.\nCorrect answer:\n${current.lhs} = ${current.rhs}\n\nDo you want to learn?`
       );
       showButtons([
         { text: "Learn", action: showLearning },
-        { text: "Retry Test", action: startTest }
+        { text: "Retry Test", action: startTest },
+        { text: "Menu", action: startIntro }
       ]);
     }
   }
@@ -106,11 +127,11 @@ function submitAnswer() {
 }
 
 /* ---------------- UTILITIES ---------------- */
+
 function normalize(str) {
   return str
     .replace(/\s+/g, "")
     .replace(/[()]/g, "")
-    .replace(/√/g, "sqrt")
     .toLowerCase();
 }
 
@@ -119,7 +140,8 @@ function setText(text) {
 }
 
 function updateStats() {
-  document.getElementById("stats").innerText = `Score: ${score} | Chances: ${chances}`;
+  document.getElementById("stats").innerText =
+    `Score: ${score} | Chances: ${chances}`;
 }
 
 function showButtons(buttons) {
@@ -133,15 +155,36 @@ function showButtons(buttons) {
   });
 }
 
-/* ---------------- ROASTS ---------------- */
+/* ---------------- ROAST ENGINE ---------------- */
+
+// Retaining original win roasts
+const winRoasts = [
+  "Oh wow. A correct answer. Mark the calendar.",
+  "Look at you pretending you studied.",
+  "That was right. Don’t let it get to your head.",
+  "Even a broken clock is right sometimes.",
+  "I’m shocked. Genuinely."
+];
+
+// Retaining original fail roasts
+const failRoasts = [
+  "That answer was confident… and wrong.",
+  "You typed that like it owed you money.",
+  "Interesting choice. Incorrect, but interesting.",
+  "I admire the bravery. Not the accuracy.",
+  "Math just sighed."
+];
+
 function getWinRoast() {
   return winRoasts[Math.floor(Math.random() * winRoasts.length)];
 }
+
 function getFailRoast() {
   return failRoasts[Math.floor(Math.random() * failRoasts.length)];
 }
 
-/* ---------------- KEYBOARD ---------------- */
+/* ---------------- KEYBOARD SUPPORT ---------------- */
+
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && mode === "test") submitAnswer();
 });
