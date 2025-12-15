@@ -31,7 +31,9 @@ loadFormulas();
 function startIntro() {
   // Clear any content from previous modes
   document.getElementById("content").innerHTML = ""; 
-  
+  document.getElementById("keyboard").innerHTML = ""; // Clear keyboard on menu screen
+  document.getElementById("answer").style.display = "none"; // Hide input on menu
+
   setText("Do you want to learn or jump straight into the test?");
   showButtons([
     { text: "Learn", action: showLearning },
@@ -43,10 +45,11 @@ function startIntro() {
 
 function showLearning() {
   mode = "learn";
-  // Clear the question text area
-  setText(""); 
+  document.getElementById("answer").style.display = "none"; // Hide input
+  document.getElementById("keyboard").innerHTML = ""; // Clear keyboard
+  setText("Formula Sheet"); 
   
-  let content = "<h3>Formula Sheet</h3><ul>";
+  let content = "<ul>";
 
   formulas.forEach(f => {
     content += `<li><b>${f.lhs}</b> = ${f.rhs}</li>`;
@@ -57,7 +60,7 @@ function showLearning() {
 
   showButtons([
     { text: "Start Test", action: startTest },
-    { text: "Menu", action: startIntro } // Added button to return to menu
+    { text: "Menu", action: startIntro } 
   ]);
 }
 
@@ -69,6 +72,7 @@ function startTest() {
   score = 0;
   // Clear the formula list area
   document.getElementById("content").innerHTML = ""; 
+  createKeyboard(); // Initialize the special keyboard
   nextQuestion();
 }
 
@@ -83,21 +87,34 @@ function nextQuestion() {
   document.getElementById("answer").value = "";
   updateStats();
   
-  // ADDED: Dynamically show the submit and quit buttons for the test
+  // Dynamically show the submit and quit buttons
   showButtons([
     { text: "Submit", action: submitAnswer },
-    { text: "Quit", action: startIntro }
+    { text: "Quit", action: startIntro } 
   ]);
 }
 
 /* ---------------- SUBMIT ANSWER ---------------- */
 
 function submitAnswer() {
-  const user = document.getElementById("answer").value.trim();
+  let user = document.getElementById("answer").value.trim();
 
-  if (!user || mode !== "test") return; // Added mode check
+  if (!user || mode !== "test") return; 
 
-  if (normalize(user) === normalize(current.rhs)) {
+  // --- Lineancy Implementation ---
+  // A helper to apply additional, formula-specific replacements (like exponents and multiplication)
+  // This logic is applied BEFORE calling normalize() to achieve lineancy 
+  // without modifying the normalize function itself.
+  const applyLineancy = (s) => s
+      .replace(/(\^2|\²)/g, "2") // Convert exponents to number 2 (e.g., sin^2 to sin2)
+      .replace(/(\^3|\³)/g, "3") // Convert exponents to number 3
+      .replace(/\*|⋅/g, ""); // Remove multiplication symbols (a*b and a⋅b become ab)
+
+  const userPrepped = applyLineancy(user);
+  const correctPrepped = applyLineancy(current.rhs);
+
+  // Compare the prepped strings using the original normalize function
+  if (normalize(userPrepped) === normalize(correctPrepped)) {
     score++;
     setText(getWinRoast());
     setTimeout(nextQuestion, 1200);
@@ -113,6 +130,7 @@ function submitAnswer() {
     } else {
       // Game Over state
       document.getElementById("answer").style.display = "none";
+      document.getElementById("keyboard").innerHTML = ""; // Clear keyboard
       setText(
         `You’re done.\nCorrect answer:\n${current.lhs} = ${current.rhs}\n\nDo you want to learn?`
       );
@@ -128,6 +146,7 @@ function submitAnswer() {
 
 /* ---------------- UTILITIES ---------------- */
 
+// USER REQUEST: DO NOT CHANGE THIS BLOCK
 function normalize(str) {
   return str
     .replace(/\s+/g, "")
@@ -154,6 +173,42 @@ function showButtons(buttons) {
     box.appendChild(btn);
   });
 }
+
+/* ---------------- KEYBOARD INTEGRATION ---------------- */
+
+const specialKeys = [
+  'π', 'θ', 'sin', 'cos', 'tan', 'cot',
+  '²', '³', '√', 'α', 'β', '∆',
+  '/', '*', '+', '-', '='
+];
+
+function createKeyboard() {
+  const keyboard = document.getElementById("keyboard");
+  keyboard.innerHTML = "";
+
+  specialKeys.forEach(key => {
+    const btn = document.createElement("button");
+    btn.innerText = key;
+    btn.onclick = () => insertKey(key);
+    keyboard.appendChild(btn);
+  });
+}
+
+function insertKey(char) {
+  const input = document.getElementById("answer");
+  const start = input.selectionStart;
+  const end = input.selectionEnd;
+  const value = input.value;
+  
+  // Logic to insert the key at the cursor position
+  input.value = value.substring(0, start) + char + value.substring(end);
+  input.focus();
+  
+  // Set cursor position after the inserted character
+  const newPos = start + char.length;
+  input.setSelectionRange(newPos, newPos);
+}
+
 
 /* ---------------- ROAST ENGINE ---------------- */
 
