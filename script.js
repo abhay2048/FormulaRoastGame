@@ -4,16 +4,17 @@ let chances = 3;
 let score = 0;
 let mode = "test";
 
-/* ---------------- LOAD FORMULAS ---------------- */
+let failRoasts = [];
+let winRoasts = [];
 
-async function loadFormulas() {
+/* ---------------- LOAD FORMULAS & ROASTS ---------------- */
+async function loadResources() {
   try {
-    const res = await fetch("maths.txt");
-    if (!res.ok) throw new Error("maths.txt not found or failed to load.");
-    const text = await res.text();
-
-    formulas = text
-      .split(/\r?\n/) // handles LF and CRLF
+    // Load formulas
+    const resFormulas = await fetch("maths.txt");
+    const textFormulas = await resFormulas.text();
+    formulas = textFormulas
+      .split(/\r?\n/)
       .map(l => l.trim())
       .filter(l => l && l.includes("="))
       .map(l => {
@@ -23,17 +24,24 @@ async function loadFormulas() {
         return { lhs, rhs };
       });
 
+    // Load roasts
+    const resRoasts = await fetch("roasts.txt");
+    const textRoasts = await resRoasts.text();
+    let allRoasts = textRoasts.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    // Split into win/fail halves
+    winRoasts = allRoasts.slice(0, Math.floor(allRoasts.length / 2));
+    failRoasts = allRoasts.slice(Math.floor(allRoasts.length / 2));
+
     startIntro();
   } catch (err) {
-    alert("Error loading formulas: " + err.message);
+    alert("Error loading resources: " + err.message);
     console.error(err);
   }
 }
 
-loadFormulas();
+loadResources();
 
 /* ---------------- INTRO ---------------- */
-
 function startIntro() {
   setText("Do you want to learn or jump straight into the test?");
   showButtons([
@@ -43,25 +51,19 @@ function startIntro() {
 }
 
 /* ---------------- LEARNING MODE ---------------- */
-
 function showLearning() {
   mode = "learn";
   let content = "<h3>Formula Sheet</h3><ul>";
-
   formulas.forEach(f => {
     content += `<li><b>${f.lhs}</b> = ${f.rhs}</li>`;
   });
-
   content += "</ul>";
   document.getElementById("content").innerHTML = content;
 
-  showButtons([
-    { text: "Start Test", action: startTest }
-  ]);
+  showButtons([{ text: "Start Test", action: startTest }]);
 }
 
 /* ---------------- TEST MODE ---------------- */
-
 function startTest() {
   mode = "test";
   chances = 3;
@@ -72,14 +74,12 @@ function startTest() {
 
 function nextQuestion() {
   current = formulas[Math.floor(Math.random() * formulas.length)];
-
   setText(`Complete this:\n\n${current.lhs} = ?`);
   document.getElementById("answer").value = "";
   updateStats();
 }
 
 /* ---------------- SUBMIT ANSWER ---------------- */
-
 function submitAnswer() {
   const user = document.getElementById("answer").value.trim();
   if (!user) return;
@@ -106,12 +106,11 @@ function submitAnswer() {
 }
 
 /* ---------------- UTILITIES ---------------- */
-
 function normalize(str) {
   return str
     .replace(/\s+/g, "")
     .replace(/[()]/g, "")
-    .replace(/√/g, "sqrt") // optional mapping for square roots
+    .replace(/√/g, "sqrt")
     .toLowerCase();
 }
 
@@ -120,8 +119,7 @@ function setText(text) {
 }
 
 function updateStats() {
-  document.getElementById("stats").innerText =
-    `Score: ${score} | Chances: ${chances}`;
+  document.getElementById("stats").innerText = `Score: ${score} | Chances: ${chances}`;
 }
 
 function showButtons(buttons) {
@@ -135,26 +133,15 @@ function showButtons(buttons) {
   });
 }
 
-/* ---------------- SARCASTIC ROAST ENGINE ---------------- */
-
-const adjectives = ["bold", "tragic", "confident", "brave", "desperate"];
-const verbs = ["typed", "guessed", "clicked", "entered", "pretended"];
-const exclamations = ["Wow", "Hmm", "Oh really", "Yikes", "Look at that"];
-
-function randomElement(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
+/* ---------------- ROASTS ---------------- */
 function getWinRoast() {
-  return `${randomElement(exclamations)}! That was ${randomElement(adjectives)} and correct.`;
+  return winRoasts[Math.floor(Math.random() * winRoasts.length)];
 }
-
 function getFailRoast() {
-  return `${randomElement(exclamations)}… you ${randomElement(verbs)} like a fool. Incorrect!`;
+  return failRoasts[Math.floor(Math.random() * failRoasts.length)];
 }
 
-/* ---------------- KEYBOARD SUPPORT ---------------- */
-
+/* ---------------- KEYBOARD ---------------- */
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && mode === "test") submitAnswer();
 });
