@@ -7,30 +7,23 @@
 </head>
 <body>
 
-<div id="menu" class="screen active">
+<div id="game-container" class="screen active">
   <h1>Formula Roast Arena</h1>
-  <button onclick="showLearning()">Do you want to learn?</button>
-  <button onclick="startTest()">Start Maths</button>
-</div>
 
-<div id="learn" class="screen">
-  <h2>All Formulas</h2>
-  <div id="formulaList"></div>
-  <div id="buttons"></div>
-</div>
+  <h2 id="question">Loading...</h2>
 
-<div id="game" class="screen">
-  <h2 id="question"></h2>
-  <input id="answer" autocomplete="off">
-  <div id="buttons"></div>
+  <div id="content"></div>
+
   <p id="stats"></p>
-</div>
 
-<div id="lose" class="screen">
-  <h1>You Lost 💀</h1>
-  <p id="roast"></p>
-  <div id="buttons"></div>
-</div>
+  <input id="answer" autocomplete="off">
+  
+  <div id="keyboard"></div>
+
+  <div id="buttons">
+    </div>
+
+  </div>
 
 <script src="script.js"></script>
 </body>
