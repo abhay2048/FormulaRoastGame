@@ -9,14 +9,14 @@
 
 <div id="menu" class="screen active">
   <h1 class="classy-title">Formula Roast Arena</h1>
-  <button onclick="openLearn()">Identity Library</button>
-  <button onclick="startGame()" class="primary-btn">Start Maths</button>
+  <button type="button" onclick="openLearn()">Identity Library</button>
+  <button type="button" onclick="startGame()" class="primary-btn">Start Maths</button>
 </div>
 
 <div id="learn" class="screen">
   <h2>Formula Library</h2>
   <div id="formulaList"></div>
-  <button onclick="goMenu()">Back to Menu</button>
+  <button type="button" onclick="goMenu()">Back to Menu</button>
 </div>
 
 <div id="game" class="screen">
@@ -25,29 +25,34 @@
   <input id="answer" autocomplete="off" placeholder="Type answer...">
   
   <div id="keyboard">
-    <button onclick="addInput('sin(')">sin</button>
-    <button onclick="addInput('cos(')">cos</button>
-    <button onclick="addInput('tan(')">tan</button>
-    <button onclick="backspace()">⌫</button>
-    <button onclick="addInput('^2')">x²</button>
-    <button onclick="addInput('sqrt(')">√</button>
-    <button onclick="addInput('pi')">π</button>
-    <button onclick="addInput('/')">/</button>
+    <button type="button" onclick="addInput('sin(')">sin</button>
+    <button type="button" onclick="addInput('cos(')">cos</button>
+    <button type="button" onclick="addInput('tan(')">tan</button>
+    <button type="button" onclick="addInput('^2')">x²</button>
+    <button type="button" onclick="addInput('sqrt(')">√</button>
+    <button type="button" onclick="addInput('pi')">π</button>
+    <button type="button" onclick="addInput('/')">/</button>
+    <button type="button" onclick="backspace()">⌫</button>
   </div>
 
   <p id="feedback"></p>
-  <button onclick="checkAnswer()" class="primary-btn">Submit</button>
-  <button onclick="goMenu()" class="quit-btn">Quit</button>
+  <button type="button" onclick="checkAnswer()" class="primary-btn">Submit</button>
+  <button type="button" onclick="goMenu()" class="quit-btn">Quit</button>
 </div>
 
 <div id="lose" class="screen">
   <h1>You Lost 💀</h1>
   <p id="roast"></p>
-  <button onclick="startGame()">Try Again</button>
-  <button onclick="goMenu()">Menu</button>
+  <button type="button" onclick="startGame()">Try Again</button>
+  <button type="button" onclick="goMenu()">Menu</button>
 </div>
 
-<script src="libs/all.min.js"></script>
+<!-- Nerdamer (CDN ensures all modules are loaded) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/nerdamer.core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Algebra.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Calculus.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Solve.min.js"></script>
+
 <script src="script.js"></script>
 </body>
 </html>
