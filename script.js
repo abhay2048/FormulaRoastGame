@@ -98,22 +98,22 @@ window.checkAnswer = () => {
 function normalize(str) {
     let s = str.toLowerCase()
         .replace(/\s+/g, "")   // remove spaces
-        .replace(/π/g, "pi")   // replace pi symbol
-        .replace(/√/g, "sqrt") // replace sqrt
+        .replace(/π/g, "pi")   // replace pi
+        .replace(/√/g, "sqrt") // sqrt
         .replace(/²/g, "^2")   // squared
         .replace(/³/g, "^3");  // cubed
 
     // 1. implicit multiplication between letters: ab -> a*b
     s = s.replace(/([a-z])([a-z])/g, "$1*$2");
 
-    // 2. number next to letter: 2x -> 2*x
+    // 2. number next to letter or function: 2x -> 2*x, 2sin(x) -> 2*sin(x)
     s = s.replace(/([0-9])([a-z])/g, "$1*$2");
 
-    // 3. function followed by variable: sin(x)y -> sin(x)*y
-    s = s.replace(/([a-z]\([^\)]*\))([a-z])/g, "$1*$2");
-
-    // 4. variable followed by function: xsin(x) -> x*sin(x)
+    // 3. variable or number followed by function: xsin(x) -> x*sin(x)
     s = s.replace(/([0-9a-z\)])([a-z]\()/g, "$1*$2");
+
+    // 4. function followed by variable or number: sin(x)y -> sin(x)*y
+    s = s.replace(/([a-z]\([^\)]*\))([0-9a-z])/g, "$1*$2");
 
     return s;
 }
