@@ -5,8 +5,13 @@ body {
   text-align: center;
 }
 
-.screen { display: none; }
-.screen.active { display: block; }
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
 
 button {
   padding: 10px 16px;
@@ -30,10 +35,16 @@ input {
   margin: 10px auto;
 }
 
-#keyboard button { padding: 8px; }
+#keyboard button {
+  padding: 8px;
+}
 
 #formulaList {
   max-width: 800px;
   margin: auto;
   text-align: left;
+}
+
+#formulaList div {
+  margin: 6px 0;
 }
