@@ -115,15 +115,15 @@ function isMathEqual(userInput, answer) {
         const uN = normalize(userInput);
         const aN = normalize(answer);
 
-        // 1. Symbolic check with simplify() for trig identities
-        const uSim = nerdamer(uN).simplify().text();
-        const aSim = nerdamer(aN).simplify().text();
+        // 1. Symbolic check with expand() + simplify()
+        const uSim = nerdamer(uN).expand().simplify().text();
+        const aSim = nerdamer(aN).expand().simplify().text();
         if (nerdamer(uSim).equals(aSim)) return true;
 
-        // 2. Numeric fallback (multiple test points)
+        // 2. Numeric fallback (multiple variables with different test values)
         const testVals = [1.25, 2.3, -0.75, 0, Math.PI/4, -Math.PI/3];
         for (let v of testVals) {
-            const scope = { x: v, a: v, b: v, y: v };
+            const scope = { x: v, a: v/2, b: v/3, y: v/4 }; // assign different numbers to variables
             const uv = Number(nerdamer(uN, scope).evaluate().text());
             const av = Number(nerdamer(aN, scope).evaluate().text());
             if (Math.abs(uv - av) > 0.01) return false;
