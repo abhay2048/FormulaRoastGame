@@ -97,16 +97,24 @@ window.checkAnswer = () => {
 // 4. Bulletproof Math Engine
 function normalize(str) {
     let s = str.toLowerCase()
-        .replace(/\s+/g, "")
-        .replace(/π/g, "pi")
-        .replace(/√/g, "sqrt")
-        .replace(/²/g, "^2")
-        .replace(/³/g, "^3");
+        .replace(/\s+/g, "")   // remove spaces
+        .replace(/π/g, "pi")   // replace pi symbol
+        .replace(/√/g, "sqrt") // replace sqrt
+        .replace(/²/g, "^2")   // squared
+        .replace(/³/g, "^3");  // cubed
 
-    // Insert * between adjacent functions/variables
-    s = s.replace(/([a-z]\([^\)]*\))([a-z]\([^\)]*\))/g, "$1*$2"); // sin(x)cos(x)
-    s = s.replace(/([a-z]\([^\)]*\))([a-z])/g, "$1*$2");             // sin(x)x
-    s = s.replace(/([0-9a-z\)])([a-z]\()/g, "$1*$2");               // 2x sin(x)
+    // 1. implicit multiplication between letters: ab -> a*b
+    s = s.replace(/([a-z])([a-z])/g, "$1*$2");
+
+    // 2. number next to letter: 2x -> 2*x
+    s = s.replace(/([0-9])([a-z])/g, "$1*$2");
+
+    // 3. function followed by variable: sin(x)y -> sin(x)*y
+    s = s.replace(/([a-z]\([^\)]*\))([a-z])/g, "$1*$2");
+
+    // 4. variable followed by function: xsin(x) -> x*sin(x)
+    s = s.replace(/([0-9a-z\)])([a-z]\()/g, "$1*$2");
+
     return s;
 }
 
@@ -115,15 +123,15 @@ function isMathEqual(userInput, answer) {
         const uN = normalize(userInput);
         const aN = normalize(answer);
 
-        // 1. Symbolic check with expand() + simplify()
+        // Symbolic comparison: expand + simplify
         const uSim = nerdamer(uN).expand().simplify().text();
         const aSim = nerdamer(aN).expand().simplify().text();
         if (nerdamer(uSim).equals(aSim)) return true;
 
-        // 2. Numeric fallback (multiple variables with different test values)
+        // Numeric fallback: multiple variables with different test values
         const testVals = [1.25, 2.3, -0.75, 0, Math.PI/4, -Math.PI/3];
         for (let v of testVals) {
-            const scope = { x: v, a: v/2, b: v/3, y: v/4 }; // assign different numbers to variables
+            const scope = { x: v, a: v/2, b: v/3, y: v/4 }; // different numbers for variables
             const uv = Number(nerdamer(uN, scope).evaluate().text());
             const av = Number(nerdamer(aN, scope).evaluate().text());
             if (Math.abs(uv - av) > 0.01) return false;
