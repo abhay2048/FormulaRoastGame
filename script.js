@@ -35,7 +35,9 @@ loadFiles();
 /* ---------- SCREEN CONTROL ---------- */
 
 function show(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(s =>
+    s.classList.remove("active")
+  );
   document.getElementById(id).classList.add("active");
 }
 
@@ -63,19 +65,32 @@ function startGame() {
 
 function nextQuestion() {
   current = formulas[Math.floor(Math.random() * formulas.length)];
-  document.getElementById("question").innerText = `${current.lhs} = ?`;
+  document.getElementById("question").innerText =
+    `${current.lhs} = ?`;
   document.getElementById("answer").value = "";
   document.getElementById("feedback").innerText = "";
   updateStats();
 }
 
 function checkAnswer() {
-  const user = document.getElementById("answer").value.trim();
-  if (!user) return;
+  const rawUser = document.getElementById("answer").value.trim();
+  if (!rawUser) return;
 
-  if (normalize(user) === normalize(current.rhs)) {
+  const user = normalize(rawUser);
+  const correct = normalize(current.rhs);
+
+  // ultra-lenient equivalents
+  const accepted = [
+    correct,
+    correct.replace(/\+/g, ""),
+    correct.replace(/\*/g, ""),
+    correct.replace(/[()]/g, "")
+  ];
+
+  if (accepted.includes(user)) {
     score++;
-    document.getElementById("feedback").innerText = "Correct. Don’t get cocky.";
+    document.getElementById("feedback").innerText =
+      "Correct. Relax. You're not Einstein yet.";
     setTimeout(nextQuestion, 1200);
   } else {
     chances--;
@@ -85,20 +100,40 @@ function checkAnswer() {
     } else {
       show("lose");
       document.getElementById("roast").innerText =
-        `Correct answer:\n${current.lhs} = ${current.rhs}\n\n` + randomRoast();
+        `Correct answer:\n${current.lhs} = ${current.rhs}\n\n` +
+        randomRoast();
     }
   }
+
   updateStats();
 }
 
-/* ---------- NORMALIZATION ---------- */
+/* ---------- SMART NORMALIZATION ---------- */
 
 function normalize(str) {
   return str
     .toLowerCase()
+
+    // remove spaces
     .replace(/\s+/g, "")
-    .replace(/[()]/g, "")
-    .replace(/π/g, "pi");
+
+    // standard symbols
+    .replace(/π/g, "pi")
+
+    // tan a → tan(a)
+    .replace(/(sin|cos|tan)([a-z])/g, "$1($2)")
+
+    // implicit multiplication: ab → a*b
+    .replace(/([a-z0-9])([a-z])/g, "$1*$2")
+
+    // a(b) → a*(b)
+    .replace(/([a-z0-9])\(/g, "$1*(")
+
+    // )a → )*a
+    .replace(/\)([a-z0-9])/g, ")*$1")
+
+    // remove extra outer brackets
+    .replace(/^\(|\)$/g, "");
 }
 
 /* ---------- STATS ---------- */
@@ -142,7 +177,10 @@ function buildKeyboard() {
 /* ---------- ENTER ---------- */
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && document.getElementById("game").classList.contains("active")) {
+  if (
+    e.key === "Enter" &&
+    document.getElementById("game").classList.contains("active")
+  ) {
     checkAnswer();
   }
 });
