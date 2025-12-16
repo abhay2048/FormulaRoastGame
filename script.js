@@ -81,11 +81,11 @@ function checkAnswer() {
   const user = normalize(rawUser);
   const correct = normalize(current.rhs);
 
-  // HARD SAFETY: power vs argument mismatch
-  if (isDangerousMismatch(user, correct)) {
+  // Reject argument power misuse like sin(θ^3)
+  if (isArgumentPower(user)) {
     chances--;
     document.getElementById("feedback").innerText =
-      "Wrong concept. Think again.";
+      "Power applied to argument, not function.";
     updateStats();
     return;
   }
@@ -127,29 +127,30 @@ function normalize(str) {
     // sinx → sin(x)
     .replace(/(sin|cos|tan)([a-z])/g, "$1($2)")
 
+    // sin^3θ → (sin(θ))^3
+    .replace(/(sin|cos|tan)\^(\d+)\(([^)]+)\)/g, "($1($3))^$2")
+    .replace(/(sin|cos|tan)\^(\d+)([a-z])/g, "($1($3))^$2")
+
     // implicit multiplication
     .replace(/([a-z0-9])([a-z])/g, "$1*$2")
     .replace(/([a-z0-9])\(/g, "$1*(")
     .replace(/\)([a-z0-9])/g, ")*$1");
 }
 
-/* ---------- SAFETY CHECK ---------- */
+/* ---------- VALIDATION ---------- */
 
-function isDangerousMismatch(a, b) {
-  const power = /\^[0-9]/;
-  const argument = /\([^)]+\)/;
-
-  return (
-    power.test(a) !== power.test(b) &&
-    argument.test(a) !== argument.test(b)
-  );
+function isArgumentPower(expr) {
+  // catches sin(θ^3), cos(x^2), etc.
+  return /(sin|cos|tan)\([^)]*\^[^)]*\)/.test(expr);
 }
 
 /* ---------- ORDER HANDLING ---------- */
 
 function sortSum(expr) {
   return expr
+    .replace(/--/g, "+")
     .split(/(?=[+-])/g)
+    .map(t => t.trim())
     .sort()
     .join("");
 }
