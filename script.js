@@ -94,7 +94,7 @@ window.checkAnswer = () => {
     updateStats();
 };
 
-// 4. Bulletproof Math Engine
+// 4. Enhanced Math Engine
 function normalize(str) {
     let s = str.toLowerCase()
         .replace(/\s+/g, "")   // remove spaces
@@ -103,16 +103,21 @@ function normalize(str) {
         .replace(/²/g, "^2")   // squared
         .replace(/³/g, "^3");  // cubed
 
-    // 1. implicit multiplication between letters: ab -> a*b
+    // 1. Convert number immediately followed by letters: 2ab -> 2*a*b
+    s = s.replace(/([0-9])([a-z]+)/g, (m, p1, p2) => {
+        return p1 + p2.split('').map(c => `*${c}`).join('');
+    });
+
+    // 2. Convert implicit multiplication between letters: ab -> a*b
     s = s.replace(/([a-z])([a-z])/g, "$1*$2");
 
-    // 2. number next to letter or function: 2x -> 2*x, 2sin(x) -> 2*sin(x)
-    s = s.replace(/([0-9])([a-z])/g, "$1*$2");
+    // 3. Number next to function/variable: 2sin(x) -> 2*sin(x)
+    s = s.replace(/([0-9])([a-z]\()/g, "$1*$2");
 
-    // 3. variable or number followed by function: xsin(x) -> x*sin(x)
+    // 4. Variable or number followed by function: xsin(x) -> x*sin(x)
     s = s.replace(/([0-9a-z\)])([a-z]\()/g, "$1*$2");
 
-    // 4. function followed by variable or number: sin(x)y -> sin(x)*y
+    // 5. Function followed by variable/number: sin(x)y -> sin(x)*y
     s = s.replace(/([a-z]\([^\)]*\))([0-9a-z])/g, "$1*$2");
 
     return s;
@@ -131,7 +136,7 @@ function isMathEqual(userInput, answer) {
         // Numeric fallback: multiple variables with different test values
         const testVals = [1.25, 2.3, -0.75, 0, Math.PI/4, -Math.PI/3];
         for (let v of testVals) {
-            const scope = { x: v, a: v/2, b: v/3, y: v/4 }; // different numbers for variables
+            const scope = { x: v, a: v/2, b: v/3, y: v/4 };
             const uv = Number(nerdamer(uN, scope).evaluate().text());
             const av = Number(nerdamer(aN, scope).evaluate().text());
             if (Math.abs(uv - av) > 0.01) return false;
