@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formula Roast Arena</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -9,41 +10,60 @@
 
 <div id="menu" class="screen active">
   <h1>Formula Roast Arena</h1>
-  <button onclick="openLearn()">Do you want to learn?</button>
+  <p style="color: #888; margin-bottom: 20px;">Master the identities or get roasted trying.</p>
   <button onclick="startGame()">Start Maths</button>
+  <button onclick="openLearn()">Identity Library</button>
 </div>
 
 <div id="learn" class="screen">
-  <h2>All Formulas</h2>
+  <h2>The Library</h2>
   <div id="formulaList"></div>
-  <button onclick="goMenu()">Back</button>
+  <button onclick="goMenu()" style="width: 100%; margin-top: 20px;">Return to Menu</button>
 </div>
 
 <div id="game" class="screen">
+  <div class="stats-header">
+    <span id="lives"></span>
+  </div>
+  
+  <div style="font-size: 0.7rem; color: #666; letter-spacing: 2px; margin-bottom: 5px;">PROVE THE IDENTITY</div>
   <h2 id="question"></h2>
 
-  <input id="answer" autocomplete="off">
-  <div id="keyboard"></div>
+  <input id="answer" placeholder="Your solution..." autocomplete="off">
+  
+  <div id="keyboard">
+    <button onclick="addInput('sin(')">sin</button>
+    <button onclick="addInput('cos(')">cos</button>
+    <button onclick="addInput('tan(')">tan</button>
+    <button onclick="backspace()" style="background: rgba(255, 75, 43, 0.2);">⌫</button>
+    
+    <button onclick="addInput('^2')">x²</button>
+    <button onclick="addInput('^3')">x³</button>
+    <button onclick="addInput('sqrt(')">√</button>
+    <button onclick="addInput('pi')">π</button>
+    
+    <button onclick="addInput('(')">(</button>
+    <button onclick="addInput(')')">)</button>
+    <button onclick="addInput('+')">+</button>
+    <button onclick="addInput('-')">-</button>
+  </div>
 
   <p id="feedback"></p>
-  <p id="lives"></p>
 
-  <button onclick="checkAnswer()">Submit</button>
-  <button onclick="goMenu()">Quit</button>
+  <div class="action-bar">
+    <button id="submitBtn" onclick="checkAnswer()">Submit Solution</button>
+    <button onclick="goMenu()" class="btn-text">Quit</button>
+  </div>
 </div>
 
 <div id="lose" class="screen">
-  <h1>You Lost 💀</h1>
+  <h1 style="color: #ff4b2b;">DEFEATED</h1>
   <p id="roast"></p>
-  <button onclick="openLearn()">Do you want to learn?</button>
+  <button onclick="startGame()">Try Again</button>
   <button onclick="goMenu()">Menu</button>
 </div>
 
-<!-- MATH ENGINE -->
-<script src="libs/nerdamer.core.js"></script>
-<script src="libs/Algebra.js"></script>
-<script src="libs/Trigonometry.js"></script>
-
+<script src="libs/all.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
