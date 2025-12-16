@@ -13,9 +13,9 @@ async function loadData() {
         const fText = await fRes.text();
         const rText = await rRes.text();
 
-        // Parse formulas and remove source tags
+        // Parse formulas correctly
         formulas = fText.split("\n")
-            .map(l => l.replace(/\/g, "").trim())
+            .map(l => l.replace(/\//g, "").trim())
             .filter(l => l.includes("="))
             .map(l => {
                 const parts = l.split("=");
@@ -24,7 +24,7 @@ async function loadData() {
 
         // Parse roasts
         roasts = rText.split("\n")
-            .map(l => l.replace(/\/g, "").trim())
+            .map(l => l.replace(/\//g, "").trim())
             .filter(l => l.length > 3);
 
         console.log("✅ Math Engine Ready. Formulas loaded:", formulas.length);
@@ -32,16 +32,14 @@ async function loadData() {
         console.error("❌ Failed to load text files:", err);
     }
 }
-
 loadData();
 
-// 2. Navigation Functions (Attached to window for button access)
+// 2. Screen Navigation
 window.showScreen = function(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(id);
     if (target) target.classList.add('active');
 };
-
 window.goMenu = function() { showScreen('menu'); };
 
 window.openLearn = function() {
@@ -91,7 +89,6 @@ window.checkAnswer = function() {
         chances--;
         document.getElementById("feedback").style.color = "#ff4b2b";
         document.getElementById("feedback").innerText = roasts[Math.floor(Math.random() * roasts.length)] || "Wrong!";
-        
         if (chances <= 0) {
             setTimeout(() => {
                 showScreen('lose');
@@ -102,7 +99,7 @@ window.checkAnswer = function() {
     updateStats();
 };
 
-// 4. Math Engine (Fixed the regex crash)
+// 4. Math Engine
 function normalize(str) {
     return str.toLowerCase()
         .replace(/\s+/g, "")
@@ -117,14 +114,14 @@ function isMathEqual(u, a) {
         const uN = normalize(u);
         const aN = normalize(a);
         
-        // 1. Try symbolic equality
-        if (window.nerdamer(uN).equals(aN)) return true;
-        
-        // 2. Numeric fallback
+        // Symbolic equality
+        if (nerdamer(uN).equals(aN)) return true;
+
+        // Numeric fallback
         const testVal = 1.25;
         const scope = { x: testVal, a: testVal, b: testVal, y: testVal };
-        const uv = Number(window.nerdamer(uN, scope).evaluate().text());
-        const av = Number(window.nerdamer(aN, scope).evaluate().text());
+        const uv = Number(nerdamer(uN, scope).evaluate().text());
+        const av = Number(nerdamer(aN, scope).evaluate().text());
         return Math.abs(uv - av) < 0.01;
     } catch (e) {
         return false;
