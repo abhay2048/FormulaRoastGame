@@ -42,7 +42,7 @@ window.goMenu = () => showScreen('menu');
 window.openLearn = () => {
     const list = document.getElementById("formulaList");
     list.innerHTML = formulas.length 
-        ? formulas.map(f => `<div>${f.lhs} = ${f.rhs}</div>`).join("") 
+        ? formulas.map(f => `<div style="margin:8px 0; border-bottom:1px solid #333; padding-bottom:4px;">${f.lhs} = ${f.rhs}</div>`).join("") 
         : "Loading formulas...";
     showScreen('learn');
 };
@@ -86,7 +86,6 @@ window.checkAnswer = () => {
         if (chances <= 0) {
             setTimeout(() => {
                 showScreen('lose');
-                // Show the correct answer
                 document.getElementById("roast").innerText =
                     `Answer: ${current.lhs} = ${current.rhs}\n${document.getElementById("feedback").innerText}`;
             }, 800);
@@ -95,39 +94,41 @@ window.checkAnswer = () => {
     updateStats();
 };
 
-// 4. Enhanced Math Engine
+// 4. Bulletproof Math Engine
 function normalize(str) {
-    let s = str.toLowerCase().replace(/\s+/g, "")
+    let s = str.toLowerCase()
+        .replace(/\s+/g, "")
         .replace(/π/g, "pi")
         .replace(/√/g, "sqrt")
         .replace(/²/g, "^2")
         .replace(/³/g, "^3");
 
-    // Insert * between adjacent functions/variables if missing (sinx cosx -> sin(x)*cos(x))
+    // Insert * between adjacent functions/variables
     s = s.replace(/([a-z]\([^\)]*\))([a-z]\([^\)]*\))/g, "$1*$2"); // sin(x)cos(x)
     s = s.replace(/([a-z]\([^\)]*\))([a-z])/g, "$1*$2");             // sin(x)x
     s = s.replace(/([0-9a-z\)])([a-z]\()/g, "$1*$2");               // 2x sin(x)
     return s;
 }
 
-function isMathEqual(u, a) {
+function isMathEqual(userInput, answer) {
     try {
-        const uN = normalize(u);
-        const aN = normalize(a);
+        const uN = normalize(userInput);
+        const aN = normalize(answer);
 
-        // 1. Symbolic check using Nerdamer expand
-        const uExp = nerdamer(uN).expand().text();
-        const aExp = nerdamer(aN).expand().text();
-        if (nerdamer(uExp).equals(aExp)) return true;
+        // 1. Symbolic check with simplify() for trig identities
+        const uSim = nerdamer(uN).simplify().text();
+        const aSim = nerdamer(aN).simplify().text();
+        if (nerdamer(uSim).equals(aSim)) return true;
 
-        // 2. Numeric fallback
-        const testVals = [1.25, 2.3, -0.75]; // multiple points to reduce errors
+        // 2. Numeric fallback (multiple test points)
+        const testVals = [1.25, 2.3, -0.75, 0, Math.PI/4, -Math.PI/3];
         for (let v of testVals) {
             const scope = { x: v, a: v, b: v, y: v };
             const uv = Number(nerdamer(uN, scope).evaluate().text());
             const av = Number(nerdamer(aN, scope).evaluate().text());
             if (Math.abs(uv - av) > 0.01) return false;
         }
+
         return true;
     } catch {
         return false;
