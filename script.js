@@ -1,212 +1,104 @@
 let formulas = [];
-let roasts = [];
 let current = null;
-let chances = 3;
 let score = 0;
+let chances = 3;
 
-/* ---------- LOAD FILES ---------- */
+/* ---------- LOAD DATA ---------- */
 
-async function loadFiles() {
-  const fRes = await fetch("maths.txt");
-  const fText = await fRes.text();
+async function loadData() {
+  const f = await fetch("maths.txt");
+  const r = await fetch("roast.txt");
 
-  formulas = fText
+  formulas = (await f.text())
     .split("\n")
     .map(l => l.trim())
-    .filter(l => l.includes("="))
+    .filter(l => l && l.includes("="))
     .map(l => {
-      const p = l.split("=");
-      return {
-        lhs: p[0].trim(),
-        rhs: p.slice(1).join("=").trim()
-      };
+      const [lhs, ...rhs] = l.split("=");
+      return { lhs: lhs.trim(), rhs: rhs.join("=").trim() };
     });
 
-  const rRes = await fetch("roast.txt");
-  const rText = await rRes.text();
-
-  roasts = rText
+  window.roasts = (await r.text())
     .split("\n")
-    .map(r => r.trim())
-    .filter(r => r);
+    .map(l => l.replace(/^\d+\.\s*/, "").trim())
+    .filter(Boolean);
 
-  buildKeyboard();
-}
-
-loadFiles();
-
-/* ---------- SCREEN CONTROL ---------- */
-
-function show(id) {
-  document.querySelectorAll(".screen")
-    .forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-function goMenu() {
-  show("menu");
-}
-
-function openLearn() {
-  show("learn");
-  const box = document.getElementById("formulaList");
-  box.innerHTML = "";
-  formulas.forEach(f => {
-    box.innerHTML += `<div><b>${f.lhs}</b> = ${f.rhs}</div>`;
-  });
-}
-
-function startGame() {
-  chances = 3;
-  score = 0;
-  show("game");
   nextQuestion();
 }
 
-/* ---------- GAME LOGIC ---------- */
+loadData();
+
+/* ---------- GAME ---------- */
 
 function nextQuestion() {
   current = formulas[Math.floor(Math.random() * formulas.length)];
-  document.getElementById("question").innerText =
-    `${current.lhs} = ?`;
+  document.getElementById("question").innerText = `${current.lhs} = ?`;
   document.getElementById("answer").value = "";
   document.getElementById("feedback").innerText = "";
   updateStats();
 }
 
 function checkAnswer() {
-  const rawUser = document.getElementById("answer").value.trim();
-  if (!rawUser) return;
+  const user = document.getElementById("answer").value;
+  if (!user) return;
 
-  const user = normalize(rawUser);
-  const correct = normalize(current.rhs);
-
-  // Reject argument power misuse like sin(θ^3)
-  if (isArgumentPower(user)) {
-    chances--;
-    document.getElementById("feedback").innerText =
-      "Power applied to argument, not function.";
-    updateStats();
-    return;
-  }
-
-  const userSorted =
-    sortProduct(sortSum(user));
-  const correctSorted =
-    sortProduct(sortSum(correct));
-
-  if (userSorted === correctSorted) {
+  if (isMathEqual(user, current.rhs)) {
     score++;
-    document.getElementById("feedback").innerText =
-      "Correct. Algebra approves. Barely.";
-    setTimeout(nextQuestion, 1200);
+    document.getElementById("feedback").innerText = "Correct.";
+    setTimeout(nextQuestion, 1000);
   } else {
     chances--;
-    if (chances > 0) {
-      document.getElementById("feedback").innerText =
-        randomRoast() + ` | Chances left: ${chances}`;
-    } else {
-      show("lose");
-      document.getElementById("roast").innerText =
-        `Correct answer:\n${current.lhs} = ${current.rhs}\n\n` +
-        randomRoast();
-    }
+    document.getElementById("feedback").innerText =
+      roasts[Math.floor(Math.random() * roasts.length)];
+    if (chances === 0) gameOver();
   }
-
   updateStats();
 }
 
-/* ---------- NORMALIZATION ---------- */
+/* ---------- MATH CORE ---------- */
 
-function normalize(str) {
-  return str
+function normalize(expr) {
+  return expr
     .toLowerCase()
     .replace(/\s+/g, "")
     .replace(/π/g, "pi")
-
-    // sinx → sin(x)
-    .replace(/(sin|cos|tan)([a-z])/g, "$1($2)")
-
-    // sin^3θ → (sin(θ))^3
-    .replace(/(sin|cos|tan)\^(\d+)\(([^)]+)\)/g, "($1($3))^$2")
-    .replace(/(sin|cos|tan)\^(\d+)([a-z])/g, "($1($3))^$2")
-
-    // implicit multiplication
-    .replace(/([a-z0-9])([a-z])/g, "$1*$2")
-    .replace(/([a-z0-9])\(/g, "$1*(")
-    .replace(/\)([a-z0-9])/g, ")*$1");
+    .replace(/√/g, "sqrt")
+    .replace(/²/g, "^2")
+    .replace(/³/g, "^3")
+    .replace(/sqrt(\d+|\w+)/g, "sqrt($1)");
 }
 
-/* ---------- VALIDATION ---------- */
-
-function isArgumentPower(expr) {
-  // catches sin(θ^3), cos(x^2), etc.
-  return /(sin|cos|tan)\([^)]*\^[^)]*\)/.test(expr);
+function isMathEqual(u, a) {
+  try {
+    if (nerdamer(normalize(u)).equals(normalize(a))) {
+      return numericCheck(u, a);
+    }
+  } catch {}
+  return numericCheck(u, a);
 }
 
-/* ---------- ORDER HANDLING ---------- */
-
-function sortSum(expr) {
-  return expr
-    .replace(/--/g, "+")
-    .split(/(?=[+-])/g)
-    .map(t => t.trim())
-    .sort()
-    .join("");
+function numericCheck(u, a) {
+  for (let i = 0; i < 5; i++) {
+    const x = Math.random() * 5 + 0.5;
+    try {
+      const uv = Number(nerdamer(normalize(u), { x }).evaluate().text());
+      const av = Number(nerdamer(normalize(a), { x }).evaluate().text());
+      if (Math.abs(uv - av) > 1e-6) return false;
+    } catch {
+      return false;
+    }
+  }
+  return true;
 }
 
-function sortProduct(expr) {
-  return expr
-    .split("*")
-    .sort()
-    .join("*");
-}
-
-/* ---------- STATS ---------- */
+/* ---------- UI ---------- */
 
 function updateStats() {
-  document.getElementById("stats").innerText =
-    `Score: ${score} | Chances: ${chances}`;
+  document.getElementById("lives").innerText =
+    `Score: ${score} | Lives: ${"❤️".repeat(chances)}`;
 }
 
-/* ---------- ROAST ---------- */
-
-function randomRoast() {
-  return roasts[Math.floor(Math.random() * roasts.length)];
+function gameOver() {
+  document.getElementById("question").innerText =
+    `Game Over\n${current.lhs} = ${current.rhs}`;
 }
-
-/* ---------- KEYBOARD ---------- */
-
-function buildKeyboard() {
-  const keys = [
-    "sin", "cos", "tan", "π", "θ", "(",
-    ")", "^", "/", "*", "+", "-",
-    "√", "log", "ln", "e", "=", "⌫"
-  ];
-
-  const kb = document.getElementById("keyboard");
-  kb.innerHTML = "";
-
-  keys.forEach(k => {
-    const b = document.createElement("button");
-    b.innerText = k;
-    b.onclick = () => {
-      const input = document.getElementById("answer");
-      if (k === "⌫") input.value = input.value.slice(0, -1);
-      else input.value += k;
-      input.focus();
-    };
-    kb.appendChild(b);
-  });
-}
-
-/* ---------- ENTER ---------- */
-
-document.addEventListener("keydown", e => {
-  if (
-    e.key === "Enter" &&
-    document.getElementById("game").classList.contains("active")
-  ) {
-    checkAnswer();
-  }
-});
