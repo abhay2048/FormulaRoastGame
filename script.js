@@ -1,35 +1,60 @@
 let formulas = [];
+let roasts = [];
 let current = null;
 let score = 0;
 let chances = 3;
 
-/* ---------- LOAD DATA ---------- */
-
 async function loadData() {
-  const f = await fetch("maths.txt");
-  const r = await fetch("roast.txt");
+  try {
+    const fResponse = await fetch("maths.txt");
+    const rResponse = await fetch("roast.txt");
+    
+    const fText = await fResponse.text();
+    const rText = await rResponse.text();
 
-  formulas = (await f.text())
-    .split("\n")
-    .map(l => l.trim())
-    .filter(l => l && l.includes("="))
-    .map(l => {
-      const [lhs, ...rhs] = l.split("=");
-      return { lhs: lhs.trim(), rhs: rhs.join("=").trim() };
-    });
+    // Clean and parse [cite: 1, 2]
+    formulas = fText.split("\n")
+      .map(l => l.replace(/\/g, "").trim())
+      .filter(l => l.includes("="))
+      .map(l => {
+        const [lhs, ...rhs] = l.split("=");
+        return { lhs: lhs.trim(), rhs: rhs.join("=").trim() };
+      });
 
-  window.roasts = (await r.text())
-    .split("\n")
-    .map(l => l.replace(/^\d+\.\s*/, "").trim())
-    .filter(Boolean);
+    // Clean roasts [cite: 3, 4]
+    roasts = rText.split("\n")
+      .map(l => l.replace(/\/g, "").trim())
+      .filter(l => l.length > 5);
 
-  nextQuestion();
+  } catch (err) {
+    console.error("Initialization error:", err);
+  }
 }
 
 loadData();
 
-/* ---------- GAME ---------- */
+/* --- NAVIGATION --- */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
+function goMenu() { showScreen('menu'); }
+
+function openLearn() {
+  const list = document.getElementById("formulaList");
+  list.innerHTML = formulas.map(f => `<div style="padding:8px; border-bottom:1px solid #222">${f.lhs} = ${f.rhs}</div>`).join("");
+  showScreen('learn');
+}
+
+function startGame() {
+  score = 0;
+  chances = 3;
+  showScreen('game');
+  nextQuestion();
+}
+
+/* --- GAMEPLAY --- */
 function nextQuestion() {
   current = formulas[Math.floor(Math.random() * formulas.length)];
   document.getElementById("question").innerText = `${current.lhs} = ?`;
@@ -38,67 +63,73 @@ function nextQuestion() {
   updateStats();
 }
 
+function updateStats() {
+  document.getElementById("lives").innerHTML = 
+    `<span style="color:#666">SCORE: ${score}</span> &nbsp;&nbsp; ${"❤️".repeat(chances)}`;
+}
+
 function checkAnswer() {
   const user = document.getElementById("answer").value;
   if (!user) return;
 
   if (isMathEqual(user, current.rhs)) {
     score++;
-    document.getElementById("feedback").innerText = "Correct.";
-    setTimeout(nextQuestion, 1000);
+    document.getElementById("feedback").style.color = "var(--primary-glow)";
+    document.getElementById("feedback").innerText = "CORRECT";
+    setTimeout(nextQuestion, 800);
   } else {
     chances--;
-    document.getElementById("feedback").innerText =
-      roasts[Math.floor(Math.random() * roasts.length)];
-    if (chances === 0) gameOver();
+    const gameScreen = document.getElementById("game");
+    gameScreen.style.animation = "shake 0.3s";
+    setTimeout(() => gameScreen.style.animation = "", 300);
+    
+    document.getElementById("feedback").style.color = "var(--error)";
+    document.getElementById("feedback").innerText = roasts[Math.floor(Math.random() * roasts.length)];
+    
+    if (chances <= 0) setTimeout(gameOver, 1000);
   }
   updateStats();
 }
 
-/* ---------- MATH CORE ---------- */
+function gameOver() {
+  showScreen('lose');
+  document.getElementById("roast").innerText = roasts[Math.floor(Math.random() * roasts.length)];
+}
 
-function normalize(expr) {
-  return expr
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/π/g, "pi")
-    .replace(/√/g, "sqrt")
-    .replace(/²/g, "^2")
-    .replace(/³/g, "^3")
-    .replace(/sqrt(\d+|\w+)/g, "sqrt($1)");
+/* --- MATH ENGINE --- */
+function normalize(e) {
+  return e.toLowerCase().replace(/\s+/g, "").replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/²/g, "^2").replace(/³/g, "^3");
 }
 
 function isMathEqual(u, a) {
+  const uN = normalize(u);
+  const aN = normalize(a);
   try {
-    if (nerdamer(normalize(u)).equals(normalize(a))) {
-      return numericCheck(u, a);
-    }
-  } catch {}
-  return numericCheck(u, a);
-}
-
-function numericCheck(u, a) {
+    if (nerdamer(uN).equals(aN)) return true;
+  } catch (e) {}
+  
+  // Numeric Check for variables [cite: 1, 2]
   for (let i = 0; i < 5; i++) {
-    const x = Math.random() * 5 + 0.5;
+    const val = Math.random() * 5 + 0.1;
     try {
-      const uv = Number(nerdamer(normalize(u), { x }).evaluate().text());
-      const av = Number(nerdamer(normalize(a), { x }).evaluate().text());
+      const scope = { x: val, a: val, b: val };
+      const uv = Number(nerdamer(uN, scope).evaluate().text());
+      const av = Number(nerdamer(aN, scope).evaluate().text());
       if (Math.abs(uv - av) > 1e-6) return false;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
   return true;
 }
 
-/* ---------- UI ---------- */
-
-function updateStats() {
-  document.getElementById("lives").innerText =
-    `Score: ${score} | Lives: ${"❤️".repeat(chances)}`;
+/* --- KEYBOARD --- */
+function addInput(v) {
+  const i = document.getElementById("answer");
+  i.value += v;
+  i.focus();
 }
 
-function gameOver() {
-  document.getElementById("question").innerText =
-    `Game Over\n${current.lhs} = ${current.rhs}`;
+function backspace() {
+  const i = document.getElementById("answer");
+  i.value = i.value.slice(0, -1);
+  i.focus();
 }
