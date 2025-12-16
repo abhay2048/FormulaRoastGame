@@ -7,21 +7,24 @@ let score = 0;
 /* ---------- LOAD FILES ---------- */
 
 async function loadFiles() {
-  // load formulas
   const fRes = await fetch("maths.txt");
   const fText = await fRes.text();
+
   formulas = fText
     .split("\n")
     .map(l => l.trim())
     .filter(l => l.includes("="))
     .map(l => {
       const p = l.split("=");
-      return { lhs: p[0].trim(), rhs: p.slice(1).join("=").trim() };
+      return {
+        lhs: p[0].trim(),
+        rhs: p.slice(1).join("=").trim()
+      };
     });
 
-  // load roasts
   const rRes = await fetch("roast.txt");
   const rText = await rRes.text();
+
   roasts = rText
     .split("\n")
     .map(r => r.trim())
@@ -35,9 +38,8 @@ loadFiles();
 /* ---------- SCREEN CONTROL ---------- */
 
 function show(id) {
-  document.querySelectorAll(".screen").forEach(s =>
-    s.classList.remove("active")
-  );
+  document.querySelectorAll(".screen")
+    .forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
@@ -79,18 +81,24 @@ function checkAnswer() {
   const user = normalize(rawUser);
   const correct = normalize(current.rhs);
 
-  // ultra-lenient equivalents
-  const accepted = [
-    correct,
-    correct.replace(/\+/g, ""),
-    correct.replace(/\*/g, ""),
-    correct.replace(/[()]/g, "")
-  ];
+  // HARD SAFETY: power vs argument mismatch
+  if (isDangerousMismatch(user, correct)) {
+    chances--;
+    document.getElementById("feedback").innerText =
+      "Wrong concept. Think again.";
+    updateStats();
+    return;
+  }
 
-  if (accepted.includes(user)) {
+  const userSorted =
+    sortProduct(sortSum(user));
+  const correctSorted =
+    sortProduct(sortSum(correct));
+
+  if (userSorted === correctSorted) {
     score++;
     document.getElementById("feedback").innerText =
-      "Correct. Relax. You're not Einstein yet.";
+      "Correct. Algebra approves. Barely.";
     setTimeout(nextQuestion, 1200);
   } else {
     chances--;
@@ -108,32 +116,49 @@ function checkAnswer() {
   updateStats();
 }
 
-/* ---------- SMART NORMALIZATION ---------- */
+/* ---------- NORMALIZATION ---------- */
 
 function normalize(str) {
   return str
     .toLowerCase()
-
-    // remove spaces
     .replace(/\s+/g, "")
-
-    // standard symbols
     .replace(/π/g, "pi")
 
-    // tan a → tan(a)
+    // sinx → sin(x)
     .replace(/(sin|cos|tan)([a-z])/g, "$1($2)")
 
-    // implicit multiplication: ab → a*b
+    // implicit multiplication
     .replace(/([a-z0-9])([a-z])/g, "$1*$2")
-
-    // a(b) → a*(b)
     .replace(/([a-z0-9])\(/g, "$1*(")
+    .replace(/\)([a-z0-9])/g, ")*$1");
+}
 
-    // )a → )*a
-    .replace(/\)([a-z0-9])/g, ")*$1")
+/* ---------- SAFETY CHECK ---------- */
 
-    // remove extra outer brackets
-    .replace(/^\(|\)$/g, "");
+function isDangerousMismatch(a, b) {
+  const power = /\^[0-9]/;
+  const argument = /\([^)]+\)/;
+
+  return (
+    power.test(a) !== power.test(b) &&
+    argument.test(a) !== argument.test(b)
+  );
+}
+
+/* ---------- ORDER HANDLING ---------- */
+
+function sortSum(expr) {
+  return expr
+    .split(/(?=[+-])/g)
+    .sort()
+    .join("");
+}
+
+function sortProduct(expr) {
+  return expr
+    .split("*")
+    .sort()
+    .join("*");
 }
 
 /* ---------- STATS ---------- */
