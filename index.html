@@ -9,12 +9,12 @@
 
 <div id="menu" class="screen active">
   <h1>Formula Roast Arena</h1>
-  <button onclick="openLearn()">Learn</button>
-  <button onclick="startGame()">Start Test</button>
+  <button onclick="openLearn()">Do you want to learn?</button>
+  <button onclick="startGame()">Start Maths</button>
 </div>
 
 <div id="learn" class="screen">
-  <h2>Formula Sheet</h2>
+  <h2>All Formulas</h2>
   <div id="formulaList"></div>
   <button onclick="goMenu()">Back</button>
 </div>
@@ -22,12 +22,11 @@
 <div id="game" class="screen">
   <h2 id="question"></h2>
 
-  <input id="answer" autocomplete="off" placeholder="Type your answer">
-
+  <input id="answer" autocomplete="off">
   <div id="keyboard"></div>
 
   <p id="feedback"></p>
-  <p id="stats"></p>
+  <p id="lives"></p>
 
   <button onclick="checkAnswer()">Submit</button>
   <button onclick="goMenu()">Quit</button>
@@ -36,9 +35,14 @@
 <div id="lose" class="screen">
   <h1>You Lost 💀</h1>
   <p id="roast"></p>
-  <button onclick="openLearn()">Learn</button>
+  <button onclick="openLearn()">Do you want to learn?</button>
   <button onclick="goMenu()">Menu</button>
 </div>
+
+<!-- MATH ENGINE -->
+<script src="libs/nerdamer.core.js"></script>
+<script src="libs/Algebra.js"></script>
+<script src="libs/Trigonometry.js"></script>
 
 <script src="script.js"></script>
 </body>
