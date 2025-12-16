@@ -1,48 +1,47 @@
-sin^4θ + cos^4θ = 1 − 2sin²θcos²θ
-sin^6θ + cos^6θ = 1 − 3sin²θcos²θ
-a³ + b³ = (a + b)(a² + b² − ab)
-a³ − b³ = (a − b)(a² + b² + ab)
-sin(−x) = −sin x
-cos(−x) = cos x
-tan(−x) = −tan x
-If A + B = 90°, then sin A = cos B
-If A + B = 180°, then sin A = sin B and cos A + cos B = 0 and tan A + tan B = 0
-sin(a + b) = sin(a)cos(b) + cos(a)sin(b)
-sin(a − b) = sin(a)cos(b) − cos(a)sin(b)
-cos(a + b) = cos(a)cos(b) − sin(a)sin(b)
-cos(a − b) = cos(a)cos(b) + sin(a)sin(b)
-tan(a + b) = (tan a + tan b) / (1 − tan² a)
-tan(a − b) = (tan a − tan b) / (1 + tan a tan b)
-sin 15° = (√3 − 1) / (2√2)
-cos 15° = (√3 + 1) / (2√2)
-tan 15° = 2 − √3
-cot 15° = 2 + √3
-sin 2θ = 2 sin θ cos θ = 2 tan θ / (1 + tan² θ)
-cos 2θ = cos² θ − sin² θ = (1 − tan² θ) / (1 + tan² θ)
-tan 2θ = 2 tan θ / (1 − tan² θ)
-tan(π/8) = √2 − 1
+sin(x)^2 + cos(x)^2 = 1
+1 + tan(x)^2 = sec(x)^2
+1 + cot(x)^2 = csc(x)^2
+
+sin(-x) = -sin(x)
+cos(-x) = cos(x)
+tan(-x) = -tan(x)
+
+(a+b)^2 = a^2 + 2ab + b^2
+(a-b)^2 = a^2 - 2ab + b^2
+a^2 - b^2 = (a-b)(a+b)
+a^3 + b^3 = (a+b)(a^2 - ab + b^2)
+a^3 - b^3 = (a-b)(a^2 + ab + b^2)
+
+sin(a+b) = sin(a)cos(b) + cos(a)sin(b)
+sin(a-b) = sin(a)cos(b) - cos(a)sin(b)
+cos(a+b) = cos(a)cos(b) - sin(a)sin(b)
+cos(a-b) = cos(a)cos(b) + sin(a)sin(b)
+
+sin(2x) = 2sin(x)cos(x)
+cos(2x) = 1 - 2sin(x)^2
+cos(2x) = 2cos(x)^2 - 1
+tan(2x) = 2tan(x)/(1 - tan(x)^2)
+
+sin(3x) = 3sin(x) - 4sin(x)^3
+cos(3x) = 4cos(x)^3 - 3cos(x)
+tan(3x) = (3tan(x) - tan(x)^3)/(1 - 3tan(x)^2)
+
+sin(a)+sin(b) = 2sin((a+b)/2)cos((a-b)/2)
+sin(a)-sin(b) = 2cos((a+b)/2)sin((a-b)/2)
+cos(a)+cos(b) = 2cos((a+b)/2)cos((a-b)/2)
+cos(a)-cos(b) = -2sin((a+b)/2)sin((a-b)/2)
+
+sin(π/6) = 1/2
+cos(π/6) = √3/2
+tan(π/6) = 1/√3
+
+sin(π/4) = 1/√2
+cos(π/4) = 1/√2
+tan(π/4) = 1
+
+sin(π/3) = √3/2
+cos(π/3) = 1/2
+tan(π/3) = √3
+
+tan(π/8) = √2 - 1
 cot(π/8) = √2 + 1
-sin(3θ) = 3 sin θ − 4 sin³ θ
-cos(3θ) = 4 cos³ θ − 3 cos θ
-tan 3θ = (3 tan θ − tan³ θ) / (1 − 3 tan² θ)
-2 cos² θ = 1 + cos 2θ
-2 sin² θ = 1 − cos 2θ
-(cos θ + sin θ)² = 1 + sin 2θ
-(cos θ − sin θ)² = 1 − sin 2θ
-sin A + sin B = 2 sin[(A + B)/2] cos[(A − B)/2]
-sin A − sin B = 2 cos[(A + B)/2] sin[(A − B)/2]
-cos A + cos B = 2 cos[(A + B)/2] cos[(A − B)/2]
-cos A − cos B = −2 sin[(A + B)/2] sin[(A − B)/2]
-2 sin A cos B = sin(A + B) + sin(A − B)
-2 cos A sin B = sin(A + B) − sin(A − B)
-2 cos A cos B = cos(A + B) + cos(A − B)
-2 sin A sin B = cos(A − B) − cos(A + B)
-sin(π/10) = sin 18° = (√5 − 1) / 4
-cos(π/5) = cos 36° = (√5 + 1) / 4
-sin(a + b)·sin(a − b) = sin² a − sin² b
-cos(a + b)·cos(a − b) = cos² a − sin² b
-sin θ · sin(60° + θ) + sin(60° − θ) = (1/4) sin 3θ
-cos a · cos(60° − a) · cos(60° + a) = (1/4) cos 3a
-tan a · tan(60° + a) · tan(60° − a) = tan 3a
-tan a + tan(60° + a) − tan(60° − a) = 3 tan 3a
-The range of a cos(x) + b sin(x) is [−√(a² + b²), √(a² + b²)]
