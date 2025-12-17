@@ -1,58 +1,61 @@
-// Global variables
+// ================== GLOBAL VARIABLES ==================
 let formulas = [];
 let roasts = [];
 let current = null;
 let score = 0;
 let chances = 3;
 
-// 1. Load Data
+// ================== LOAD DATA ==================
 async function loadData() {
     try {
         const fRes = await fetch("maths.txt");
         const rRes = await fetch("roast.txt");
+
         const fText = await fRes.text();
         const rText = await rRes.text();
 
-        formulas = fText.split("\n")
-            .map(l => l.replace(/\//g, "").trim())
-            .filter(l => l.includes("="))
+        formulas = fText
+            .split("\n")
+            .map(l => l.trim())
+            .filter(l => l && l.includes("="))
             .map(l => {
-                const parts = l.split("=");
-                return { lhs: parts[0].trim(), rhs: parts.slice(1).join("=").trim() };
+                const [lhs, ...rhs] = l.split("=");
+                return { lhs: lhs.trim(), rhs: rhs.join("=").trim() };
             });
 
-        roasts = rText.split("\n")
-            .map(l => l.replace(/\//g, "").trim())
+        roasts = rText
+            .split("\n")
+            .map(l => l.trim())
             .filter(l => l.length > 3);
 
-        console.log("✅ Formulas Loaded:", formulas.length);
-    } catch (err) {
-        console.error("❌ Failed to load files:", err);
+        console.log("Loaded formulas:", formulas.length);
+    } catch (e) {
+        console.error("Load error:", e);
     }
 }
 loadData();
 
-// 2. Screen Navigation
+// ================== SCREEN NAVIGATION ==================
 window.showScreen = id => {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id)?.classList.add('active');
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id)?.classList.add("active");
 };
-window.goMenu = () => showScreen('menu');
+window.goMenu = () => showScreen("menu");
 
 window.openLearn = () => {
     const list = document.getElementById("formulaList");
-    list.innerHTML = formulas.length 
-        ? formulas.map(f => `<div style="margin:8px 0; border-bottom:1px solid #333; padding-bottom:4px;">${f.lhs} = ${f.rhs}</div>`).join("") 
-        : "Loading formulas...";
-    showScreen('learn');
+    list.innerHTML = formulas.map(f =>
+        `<div style="margin:6px 0;border-bottom:1px solid #333">${f.lhs} = ${f.rhs}</div>`
+    ).join("");
+    showScreen("learn");
 };
 
-// 3. Game Logic
+// ================== GAME LOGIC ==================
 window.startGame = () => {
-    if (!formulas.length) return alert("Loading data… wait 1 sec");
+    if (!formulas.length) return alert("Loading… wait");
     score = 0;
     chances = 3;
-    showScreen('game');
+    showScreen("game");
     nextQuestion();
 };
 
@@ -65,8 +68,8 @@ function nextQuestion() {
 }
 
 function updateStats() {
-    const statsDiv = document.getElementById("lives");
-    statsDiv.innerHTML = `SCORE: ${score} | LIVES: ${"❤️".repeat(chances)}`;
+    document.getElementById("lives").innerHTML =
+        `SCORE: ${score} | LIVES: ${"❤️".repeat(chances)}`;
 }
 
 window.checkAnswer = () => {
@@ -75,71 +78,83 @@ window.checkAnswer = () => {
 
     if (isMathEqual(user, current.rhs)) {
         score++;
-        document.getElementById("feedback").style.color = "#00d2ff";
-        document.getElementById("feedback").innerText = "CORRECT! ✨";
-        setTimeout(nextQuestion, 800);
+        document.getElementById("feedback").style.color = "#00eaff";
+        document.getElementById("feedback").innerText = "Correct ✨";
+        setTimeout(nextQuestion, 700);
     } else {
         chances--;
         document.getElementById("feedback").style.color = "#ff4b2b";
-        document.getElementById("feedback").innerText = roasts[Math.floor(Math.random() * roasts.length)] || "Wrong!";
+        document.getElementById("feedback").innerText =
+            roasts[Math.floor(Math.random() * roasts.length)] || "Wrong";
 
         if (chances <= 0) {
             setTimeout(() => {
-                showScreen('lose');
+                showScreen("lose");
                 document.getElementById("roast").innerText =
-                    `Answer: ${current.lhs} = ${current.rhs}\n${document.getElementById("feedback").innerText}`;
-            }, 800);
+                    `Correct Answer:\n${current.lhs} = ${current.rhs}`;
+            }, 700);
         }
     }
     updateStats();
 };
 
-// 4. Enhanced Math Engine
+// ================== MATH ENGINE ==================
+
+// teach nerdamer missing trig
+nerdamer.setFunction('sec', ['x'], '1/cos(x)');
+nerdamer.setFunction('csc', ['x'], '1/sin(x)');
+nerdamer.setFunction('cot', ['x'], '1/tan(x)');
+
 function normalize(str) {
-    let s = str.toLowerCase()
-        .replace(/\s+/g, "")   // remove spaces
-        .replace(/π/g, "pi")   // replace pi
-        .replace(/√/g, "sqrt") // sqrt
-        .replace(/²/g, "^2")   // squared
-        .replace(/³/g, "^3");  // cubed
+    let s = str.toLowerCase();
 
-    // 1. Convert number immediately followed by letters: 2ab -> 2*a*b
-    s = s.replace(/([0-9])([a-z]+)/g, (m, p1, p2) => {
-        return p1 + p2.split('').map(c => `*${c}`).join('');
-    });
+    // remove spaces
+    s = s.replace(/\s+/g, "");
 
-    // 2. Convert implicit multiplication between letters: ab -> a*b
-    s = s.replace(/([a-z])([a-z])/g, "$1*$2");
+    // constants
+    s = s.replace(/π/g, "pi");
 
-    // 3. Number next to function/variable: 2sin(x) -> 2*sin(x)
-    s = s.replace(/([0-9])([a-z]\()/g, "$1*$2");
+    // roots & powers
+    s = s.replace(/√([a-z0-9\(\)]+)/g, "sqrt($1)");
+    s = s.replace(/([a-z0-9\)])²/g, "$1^2");
+    s = s.replace(/([a-z0-9\)])³/g, "$1^3");
 
-    // 4. Variable or number followed by function: xsin(x) -> x*sin(x)
-    s = s.replace(/([0-9a-z\)])([a-z]\()/g, "$1*$2");
+    // sinx → sin(x)
+    s = s.replace(/(sin|cos|tan|sec|csc|cot)([a-z])/g, "$1($2)");
 
-    // 5. Function followed by variable/number: sin(x)y -> sin(x)*y
-    s = s.replace(/([a-z]\([^\)]*\))([0-9a-z])/g, "$1*$2");
+    // implicit multiplication
+    s = s
+        .replace(/([0-9])([a-z\(])/g, "$1*$2")
+        .replace(/([a-z\)])([0-9])/g, "$1*$2")
+        .replace(/([a-z])([a-z])/g, "$1*$2")
+        .replace(/(\))(\()/g, "$1*$2");
 
     return s;
 }
 
 function isMathEqual(userInput, answer) {
     try {
-        const uN = normalize(userInput);
-        const aN = normalize(answer);
+        const u = normalize(userInput);
+        const a = normalize(answer);
 
-        // Symbolic comparison: expand + simplify
-        const uSim = nerdamer(uN).expand().simplify().text();
-        const aSim = nerdamer(aN).expand().simplify().text();
-        if (nerdamer(uSim).equals(aSim)) return true;
+        // symbolic check
+        if (
+            nerdamer(u).expand().simplify().equals(
+                nerdamer(a).expand().simplify()
+            )
+        ) return true;
 
-        // Numeric fallback: multiple variables with different test values
-        const testVals = [1.25, 2.3, -0.75, 0, Math.PI/4, -Math.PI/3];
-        for (let v of testVals) {
-            const scope = { x: v, a: v/2, b: v/3, y: v/4 };
-            const uv = Number(nerdamer(uN, scope).evaluate().text());
-            const av = Number(nerdamer(aN, scope).evaluate().text());
-            if (Math.abs(uv - av) > 0.01) return false;
+        // numeric fallback
+        const tests = [
+            {x: 1.2, a: 0.7, b: 0.4},
+            {x: -0.9, a: -0.5, b: 0.3},
+            {x: Math.PI / 4, a: 1, b: 2}
+        ];
+
+        for (let t of tests) {
+            const uv = Number(nerdamer(u, t).evaluate().text());
+            const av = Number(nerdamer(a, t).evaluate().text());
+            if (Math.abs(uv - av) > 1e-3) return false;
         }
 
         return true;
@@ -148,9 +163,11 @@ function isMathEqual(userInput, answer) {
     }
 }
 
-// 5. Custom Keyboard
-window.addInput = v => document.getElementById("answer").value += v;
+// ================== CUSTOM KEYBOARD ==================
+window.addInput = v => {
+    document.getElementById("answer").value += v;
+};
 window.backspace = () => {
-    const input = document.getElementById("answer");
-    input.value = input.value.slice(0, -1);
+    const i = document.getElementById("answer");
+    i.value = i.value.slice(0, -1);
 };
