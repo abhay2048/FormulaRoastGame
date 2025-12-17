@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Roast Game</title>
 
-    <!-- NERDAMER -->
+    <!-- NERDAMER (MUST LOAD FIRST) -->
     <script src="libs/all.min.js"></script>
 
     <style>
@@ -20,7 +20,12 @@
             height: 100vh;
             margin: 0;
         }
-        .screen { display: none; text-align: center; width: 90%; max-width: 500px; }
+        .screen {
+            display: none;
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
         .active { display: block; }
         .tip-box {
             background: #1a1a1a;
@@ -51,25 +56,35 @@
             font-weight: bold;
             margin: 10px;
         }
-        #feedback { height: 30px; margin: 10px; font-weight: bold; }
-        code { color: #fff; background: #333; padding: 2px 4px; }
+        #feedback {
+            height: 30px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        code {
+            color: #fff;
+            background: #333;
+            padding: 2px 4px;
+        }
     </style>
 </head>
 <body>
 
+<!-- MENU -->
 <div id="menu" class="screen active">
     <h1>Math Roast 🔥</h1>
     <button onclick="startGame()">START GAME</button>
     <button onclick="openLearn()">FORMULAS</button>
 </div>
 
+<!-- GAME -->
 <div id="game" class="screen">
     <div id="lives"></div>
 
     <div class="tip-box">
         <strong>💡 Bracket Guide:</strong><br>
         • <code>sinx</code> works<br>
-        • Use brackets for denominators: <code>(a+b)/2</code>
+        • Use brackets: <code>(a+b)/2</code>
     </div>
 
     <h2 id="question"></h2>
@@ -79,12 +94,14 @@
     <div id="feedback"></div>
 </div>
 
+<!-- LOSE -->
 <div id="lose" class="screen">
     <h1 style="color: var(--bad);">ROASTED 💀</h1>
     <p id="roast"></p>
     <button onclick="location.reload()">RETRY</button>
 </div>
 
+<!-- LEARN -->
 <div id="learn" class="screen">
     <h2>Formula Reference</h2>
     <div id="formulaList"
@@ -93,6 +110,8 @@
     <button onclick="showScreen('menu')">BACK</button>
 </div>
 
-<script src="game.js"></script>
+<!-- YOUR GAME LOGIC -->
+<script src="scipt.js"></script>
+
 </body>
 </html>
