@@ -6,60 +6,50 @@
     <title>Math Roast Game</title>
     <script src="all.min.js"></script>
     <style>
-        :root { --primary: #00d2ff; --error: #ff4b2b; --bg: #0f0f0f; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .screen { display: none; text-align: center; width: 90%; max-width: 500px; animation: fadeIn 0.5s; }
+        :root { --accent: #00d2ff; --bad: #ff4b2b; }
+        body { background: #0f0f0f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .screen { display: none; text-align: center; width: 90%; max-width: 500px; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .tip-box { background: #1a1a1a; border-left: 4px solid var(--primary); padding: 12px; margin: 15px 0; text-align: left; font-size: 0.85em; color: #bbb; border-radius: 4px; }
-        code { color: white; background: #333; padding: 2px 4px; border-radius: 3px; }
-        
-        input { background: #1a1a1a; border: 2px solid #333; color: white; padding: 15px; border-radius: 8px; width: 80%; font-size: 1.2em; outline: none; margin: 10px 0; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
-        
-        button { background: var(--primary); color: black; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; margin: 10px; transition: 0.2s; }
-        button:hover { transform: scale(1.05); filter: brightness(1.1); }
-        
-        #feedback { height: 40px; margin: 15px 0; font-weight: bold; font-size: 1.1em; }
-        #lives { letter-spacing: 3px; margin-bottom: 20px; color: var(--primary); }
+        .tip-box { background: #1a1a1a; border-left: 4px solid var(--accent); padding: 10px; margin: 15px 0; text-align: left; font-size: 0.85em; color: #ccc; }
+        input { background: #1a1a1a; border: 2px solid #333; color: white; padding: 12px; border-radius: 8px; width: 80%; font-size: 1.2em; outline: none; }
+        button { background: var(--accent); color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 10px; }
+        #feedback { height: 30px; margin: 10px; font-weight: bold; }
+        code { color: #fff; background: #333; padding: 2px 4px; }
     </style>
 </head>
 <body>
 
     <div id="menu" class="screen active">
-        <h1>MATH ROAST 🔥</h1>
-        <p>Can you solve the formula before the AI burns you?</p>
+        <h1>Math Roast 🔥</h1>
         <button onclick="startGame()">START GAME</button>
-        <button onclick="openLearn()" style="background: #333; color: white;">FORMULA LIST</button>
+        <button onclick="openLearn()">FORMULAS</button>
     </div>
 
     <div id="game" class="screen">
         <div id="lives"></div>
-        
         <div class="tip-box">
-            <strong>💡 Bracket Rules:</strong><br>
-            • <code>sinx</code> or <code>sin x</code> (Works fine!)<br>
-            • Use brackets for groups in denominators: <code>(a+b)/2</code>
+            <strong>💡 Bracket Guide:</strong><br>
+            • <code>sinx</code> or <code>sin x</code> (Works!)<br>
+            • For denominators, use brackets: <code>(a+b)/2</code>
         </div>
         
         <h2 id="question"></h2>
-        <input type="text" id="answer" placeholder="Type your answer..." autocomplete="off">
+        <input type="text" id="answer" placeholder="Your answer..." autocomplete="off">
         <br>
         <button onclick="checkAnswer()">SUBMIT</button>
         <div id="feedback"></div>
     </div>
 
     <div id="lose" class="screen">
-        <h1 style="color: var(--error);">ROASTED 💀</h1>
+        <h1 style="color: var(--bad);">ROASTED 💀</h1>
         <p id="roast"></p>
-        <button onclick="goMenu()">TRY AGAIN</button>
+        <button onclick="location.reload()">RETRY</button>
     </div>
 
     <div id="learn" class="screen">
         <h2>Formula Reference</h2>
-        <div id="formulaList" style="max-height: 300px; overflow-y: auto; background: #111; padding: 15px; border-radius: 8px; text-align: left;"></div>
-        <button onclick="goMenu()">BACK TO MENU</button>
+        <div id="formulaList" style="max-height: 300px; overflow-y: auto; text-align: left; background: #111; padding: 10px;"></div>
+        <button onclick="showScreen('menu')">BACK</button>
     </div>
 
     <script src="game.js"></script>
