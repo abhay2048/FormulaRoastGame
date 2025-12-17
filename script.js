@@ -1,86 +1,84 @@
-// Global State
+// ---------- GLOBAL STATE ----------
 let formulas = [];
 let roasts = [];
 let current = null;
 let score = 0;
 let chances = 3;
 
-// 1. Navigation
-window.showScreen = function(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+// ---------- SCREEN NAV ----------
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     const el = document.getElementById(id);
-    if (el) el.classList.add('active');
-};
+    if (el) el.classList.add("active");
+}
+window.showScreen = showScreen;
 
-// 2. Math Engine (Leniency)
+// ---------- NORMALIZATION ----------
 function normalize(str) {
     if (!str) return "";
-    let s = str.toLowerCase().replace(/\s+/g, ""); 
-    
-    s = s.replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/²/g, "^2").replace(/³/g, "^3").replace(/cosec/g, "csc");
-    
-    // sin^2x -> (sin(x))^2
-    s = s.replace(/(sin|cos|tan|csc|sec|cot)\^?(\d+)\(?([a-z0-9]+)\)?/g, "($1($3))^$2");
-    
-    // sinx -> sin(x)
-    s = s.replace(/(sin|cos|tan|csc|sec|cot)([a-z0-9]+)/g, "$1($2)");
+    let s = str.toLowerCase().replace(/\s+/g, "");
 
-    // ab -> a*b
+    s = s.replace(/π/g, "pi")
+         .replace(/√/g, "sqrt")
+         .replace(/²/g, "^2")
+         .replace(/³/g, "^3")
+         .replace(/cosec/g, "csc");
+
+    s = s.replace(/(sin|cos|tan|csc|sec|cot)([a-z0-9]+)/g, "$1($2)");
     s = s.replace(/(\d)([a-z])/g, "$1*$2");
-    s = s.replace(/([a-z])(?=[a-z])/g, (match, p1, offset, whole) => {
-        const funcs = ["sin", "cos", "tan", "csc", "sec", "cot"];
-        const check = whole.substr(offset, 3);
-        return funcs.includes(check) ? p1 : p1 + "*";
-    });
-    
+    s = s.replace(/([a-z])([a-z])/g, "$1*$2");
+
     return s;
 }
 
-function isMathEqual(userInput, answer) {
+// ---------- MATH CHECK ----------
+function isMathEqual(user, answer) {
     try {
-        const uN = normalize(userInput);
-        const aN = normalize(answer);
-        const diff = nerdamer(`(${uN}) - (${aN})`).expand().simplify().text();
+        const u = normalize(user);
+        const a = normalize(answer);
+
+        const diff = nerdamer(`(${u})-(${a})`).expand().simplify().text();
         if (diff === "0") return true;
 
-        const p = 0.5;
-        const scope = { x: p, a: p + 0.1, b: p - 0.1, y: p * 2 };
-        const result = nerdamer(`(${uN}) - (${aN})`, scope).evaluate().text();
-        return Math.abs(parseFloat(result)) < 0.001;
-    } catch (e) { return false; }
+        const scope = { x: 0.7, a: 1.1, b: -0.4 };
+        const val = nerdamer(`(${u})-(${a})`, scope).evaluate().text();
+        return Math.abs(parseFloat(val)) < 0.001;
+    } catch {
+        return false;
+    }
 }
 
-// 3. Game Actions
-window.startGame = function() {
-    if (formulas.length === 0) {
-        alert("Data is still loading from maths.txt...");
+// ---------- GAME ----------
+window.startGame = function () {
+    if (!formulas.length) {
+        alert("maths.txt still loading");
         return;
     }
     score = 0;
     chances = 3;
-    window.showScreen('game');
+    showScreen("game");
     nextQuestion();
 };
 
-window.checkAnswer = function() {
-    const userValue = document.getElementById("answer").value.trim();
-    if (!userValue) return;
+window.checkAnswer = function () {
+    const input = document.getElementById("answer").value.trim();
+    if (!input) return;
 
-    if (isMathEqual(userValue, current.rhs)) {
+    if (isMathEqual(input, current.rhs)) {
         score++;
-        document.getElementById("feedback").style.color = "#00d2ff";
-        document.getElementById("feedback").innerText = "CORRECT! ✨";
-        setTimeout(nextQuestion, 800);
+        feedback("CORRECT! ✨", "#00d2ff");
+        setTimeout(nextQuestion, 700);
     } else {
         chances--;
         const roast = roasts[Math.floor(Math.random() * roasts.length)] || "Wrong!";
-        document.getElementById("feedback").style.color = "#ff4b2b";
-        document.getElementById("feedback").innerText = roast;
+        feedback(roast, "#ff4b2b");
+
         if (chances <= 0) {
             setTimeout(() => {
-                window.showScreen('lose');
-                document.getElementById("roast").innerText = `Correct Answer: ${current.rhs}\n\n${roast}`;
-            }, 800);
+                showScreen("lose");
+                document.getElementById("roast").innerText =
+                    `Correct Answer: ${current.rhs}\n\n${roast}`;
+            }, 700);
         }
     }
     updateStats();
@@ -96,40 +94,37 @@ function nextQuestion() {
 }
 
 function updateStats() {
-    const stats = document.getElementById("lives");
-    if (stats) stats.innerHTML = `SCORE: ${score} | LIVES: ${"❤️".repeat(chances)}`;
+    document.getElementById("lives").innerHTML =
+        `SCORE: ${score} | LIVES: ${"❤️".repeat(chances)}`;
 }
 
-window.openLearn = function() {
-    document.getElementById("formulaList").innerHTML = formulas.map(f => `<div>${f.lhs} = ${f.rhs}</div>`).join("");
-    window.showScreen('learn');
+function feedback(text, color) {
+    const f = document.getElementById("feedback");
+    f.style.color = color;
+    f.innerText = text;
+}
+
+// ---------- LEARN ----------
+window.openLearn = function () {
+    document.getElementById("formulaList").innerHTML =
+        formulas.map(f => `<div>${f.lhs} = ${f.rhs}</div>`).join("");
+    showScreen("learn");
 };
 
-// 4. Initialization
+// ---------- LOAD FILES ----------
 async function loadData() {
-    try {
-        const fRes = await fetch("maths.txt");
-        const rRes = await fetch("roast.txt");
-        const fText = await fRes.text();
-        const rText = await rRes.text();
-        
-        formulas = fText.split("\n").filter(l => l.includes("=")).map(l => {
-            const parts = l.split("=");
-            return { lhs: parts[0].trim(), rhs: parts[1].trim() };
+    const fText = await fetch("maths.txt").then(r => r.text());
+    const rText = await fetch("roast.txt").then(r => r.text());
+
+    formulas = fText.split("\n")
+        .filter(l => l.includes("="))
+        .map(l => {
+            const [lhs, rhs] = l.split("=");
+            return { lhs: lhs.trim(), rhs: rhs.trim() };
         });
-        roasts = rText.split("\n").filter(l => l.trim().length > 2);
-        console.log("✅ Game Logic Loaded");
-    } catch (e) {
-        console.error("Critical: Could not load maths.txt or roast.txt");
-    }
+
+    roasts = rText.split("\n").filter(Boolean);
+    console.log("Loaded:", formulas.length, "formulas");
 }
 
-// Event Listeners
-document.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        const gameScreen = document.getElementById("game");
-        if (gameScreen && gameScreen.classList.contains("active")) window.checkAnswer();
-    }
-});
-
-loadData();
+document.addEventListener("DOMContentLoaded", loadData);
