@@ -1,58 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Formula Roast Arena</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Roast Game</title>
+    <script src="all.min.js"></script>
+    <style>
+        :root { --primary: #00d2ff; --error: #ff4b2b; --bg: #0f0f0f; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .screen { display: none; text-align: center; width: 90%; max-width: 500px; animation: fadeIn 0.5s; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .tip-box { background: #1a1a1a; border-left: 4px solid var(--primary); padding: 12px; margin: 15px 0; text-align: left; font-size: 0.85em; color: #bbb; border-radius: 4px; }
+        code { color: white; background: #333; padding: 2px 4px; border-radius: 3px; }
+        
+        input { background: #1a1a1a; border: 2px solid #333; color: white; padding: 15px; border-radius: 8px; width: 80%; font-size: 1.2em; outline: none; margin: 10px 0; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+        
+        button { background: var(--primary); color: black; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; margin: 10px; transition: 0.2s; }
+        button:hover { transform: scale(1.05); filter: brightness(1.1); }
+        
+        #feedback { height: 40px; margin: 15px 0; font-weight: bold; font-size: 1.1em; }
+        #lives { letter-spacing: 3px; margin-bottom: 20px; color: var(--primary); }
+    </style>
 </head>
 <body>
 
-<div id="menu" class="screen active">
-  <h1 class="classy-title">Formula Roast Arena</h1>
-  <button type="button" onclick="openLearn()">Identity Library</button>
-  <button type="button" onclick="startGame()" class="primary-btn">Start Maths</button>
-</div>
+    <div id="menu" class="screen active">
+        <h1>MATH ROAST 🔥</h1>
+        <p>Can you solve the formula before the AI burns you?</p>
+        <button onclick="startGame()">START GAME</button>
+        <button onclick="openLearn()" style="background: #333; color: white;">FORMULA LIST</button>
+    </div>
 
-<div id="learn" class="screen">
-  <h2>Formula Library</h2>
-  <div id="formulaList"></div>
-  <button type="button" onclick="goMenu()">Back to Menu</button>
-</div>
+    <div id="game" class="screen">
+        <div id="lives"></div>
+        
+        <div class="tip-box">
+            <strong>💡 Bracket Rules:</strong><br>
+            • <code>sinx</code> or <code>sin x</code> (Works fine!)<br>
+            • Use brackets for groups in denominators: <code>(a+b)/2</code>
+        </div>
+        
+        <h2 id="question"></h2>
+        <input type="text" id="answer" placeholder="Type your answer..." autocomplete="off">
+        <br>
+        <button onclick="checkAnswer()">SUBMIT</button>
+        <div id="feedback"></div>
+    </div>
 
-<div id="game" class="screen">
-  <div id="lives"></div>
-  <h2 id="question"></h2>
-  <input id="answer" autocomplete="off" placeholder="Type answer...">
-  
-  <div id="keyboard">
-    <button type="button" onclick="addInput('sin(')">sin</button>
-    <button type="button" onclick="addInput('cos(')">cos</button>
-    <button type="button" onclick="addInput('tan(')">tan</button>
-    <button type="button" onclick="addInput('^2')">x²</button>
-    <button type="button" onclick="addInput('sqrt(')">√</button>
-    <button type="button" onclick="addInput('pi')">π</button>
-    <button type="button" onclick="addInput('/')">/</button>
-    <button type="button" onclick="backspace()">⌫</button>
-  </div>
+    <div id="lose" class="screen">
+        <h1 style="color: var(--error);">ROASTED 💀</h1>
+        <p id="roast"></p>
+        <button onclick="goMenu()">TRY AGAIN</button>
+    </div>
 
-  <p id="feedback"></p>
-  <button type="button" onclick="checkAnswer()" class="primary-btn">Submit</button>
-  <button type="button" onclick="goMenu()" class="quit-btn">Quit</button>
-</div>
+    <div id="learn" class="screen">
+        <h2>Formula Reference</h2>
+        <div id="formulaList" style="max-height: 300px; overflow-y: auto; background: #111; padding: 15px; border-radius: 8px; text-align: left;"></div>
+        <button onclick="goMenu()">BACK TO MENU</button>
+    </div>
 
-<div id="lose" class="screen">
-  <h1>You Lost 💀</h1>
-  <p id="roast"></p>
-  <button type="button" onclick="startGame()">Try Again</button>
-  <button type="button" onclick="goMenu()">Menu</button>
-</div>
-
-<!-- Nerdamer (CDN ensures all modules are loaded) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/nerdamer.core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Algebra.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Calculus.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Solve.min.js"></script>
-
-<script src="script.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
