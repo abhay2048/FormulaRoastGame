@@ -2,116 +2,109 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Roast Game</title>
-
-    <!-- NERDAMER (MUST LOAD FIRST) -->
-    <script src="libs/all.min.js"></script>
-
-    <style>
-        :root { --accent: #00d2ff; --bad: #ff4b2b; }
-        body {
-            background: #0f0f0f;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .screen {
-            display: none;
-            text-align: center;
-            width: 90%;
-            max-width: 500px;
-        }
-        .active { display: block; }
-        .tip-box {
-            background: #1a1a1a;
-            border-left: 4px solid var(--accent);
-            padding: 10px;
-            margin: 15px 0;
-            text-align: left;
-            font-size: 0.85em;
-            color: #ccc;
-        }
-        input {
-            background: #1a1a1a;
-            border: 2px solid #333;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            width: 80%;
-            font-size: 1.2em;
-            outline: none;
-        }
-        button {
-            background: var(--accent);
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 10px;
-        }
-        #feedback {
-            height: 30px;
-            margin: 10px;
-            font-weight: bold;
-        }
-        code {
-            color: #fff;
-            background: #333;
-            padding: 2px 4px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AXIOM | Mathematical Navigator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            startup: { ready: () => { MathJax.startup.defaultReady(); window.mjReady = true; } }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Constrained Mathematical Starfield -->
+    <div id="symbol-layer" class="scholarly-bg"></div>
 
-<!-- MENU -->
-<div id="menu" class="screen active">
-    <h1>Math Roast 🔥</h1>
-    <button onclick="startGame()">START GAME</button>
-    <button onclick="openLearn()">FORMULAS</button>
-</div>
+    <div class="app-container">
+        <!-- AUTH SCREEN -->
+        <section id="screen-login" class="screen">
+            <div class="auth-wrap">
+                <div class="seal-logo">A</div>
+                <h1 class="axiom-logo">AXIOM</h1>
+                <p class="tagline">Mathematical Navigator</p>
+                <div class="login-card">
+                    <input type="text" id="callsign-input" placeholder="Operator Identity" autocomplete="off">
+                    <button class="btn-primary" onclick="submitLogin()">Initialize</button>
+                </div>
+            </div>
+        </section>
 
-<!-- GAME -->
-<div id="game" class="screen">
-    <div id="lives"></div>
+        <!-- DASHBOARD -->
+        <section id="screen-home" class="screen hidden">
+            <header class="home-header">
+                <div class="profile-meta">
+                    <span id="rank-tag" class="label-muted">Novice Scholar</span>
+                    <h2 id="display-name" class="serif-title">Scholar</h2>
+                </div>
+                <div class="index-circle-wrap">
+                    <svg viewBox="0 0 36 36" class="chart">
+                        <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        <path id="xp-ring" class="ring-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <div class="index-label"><span id="level-val">1</span><small>INDEX</small></div>
+                </div>
+            </header>
 
-    <div class="tip-box">
-        <strong>💡 Bracket Guide:</strong><br>
-        • <code>sinx</code> works<br>
-        • Use brackets: <code>(a+b)/2</code>
+            <div class="stats-grid">
+                <div class="stat-box"><label>BEST STREAK</label><span id="best-val">0</span></div>
+                <div class="stat-box"><label>ACCURACY</label><span id="accuracy-val">0%</span></div>
+            </div>
+
+            <div class="home-menu">
+                <button class="menu-action-card" onclick="showScreen('screen-chapters')">
+                    <span class="serif-title">Commence Session</span>
+                    <small>Verify archive manuscripts</small>
+                </button>
+                <button id="repair-btn" class="menu-action-card repair-btn" style="display:none;" onclick="startRepair()">
+                    <span class="serif-title">Address Weaknesses</span>
+                    <small>Focus on identified gaps</small>
+                </button>
+            </div>
+        </section>
+
+        <!-- PRACTICE ARENA -->
+        <section id="screen-game" class="screen hidden">
+            <div class="arena-hud">
+                <div id="lives-box">❤️❤️❤️</div>
+                <div class="timer-rail"><div id="timer-fill"></div></div>
+                <div id="streak-box" class="serif-title">0</div>
+            </div>
+            
+            <div class="formula-viewport">
+                <div class="hero-card">
+                    <div id="formula-display" class="math-main"></div>
+                </div>
+            </div>
+
+            <div id="options-stack" class="options-container"></div>
+        </section>
+
+        <!-- NAVIGATION -->
+        <nav id="main-dock" class="bottom-dock hidden">
+            <div class="nav-item active" onclick="showScreen('screen-home')">Library</div>
+            <div class="nav-item" onclick="showScreen('screen-vault')">Archive</div>
+            <div class="nav-item" onclick="showScreen('screen-logs')">Gaps</div>
+        </nav>
+
+        <!-- SUB SCREENS -->
+        <div id="screen-chapters" class="screen hidden"><header class="sub-header"><button class="btn-back" onclick="showScreen('screen-home')">←</button><h2>Archives</h2></header><div class="scroll-v" id="chapter-list"></div></div>
+        <div id="screen-difficulty" class="screen hidden"><header class="sub-header"><button class="btn-back" onclick="showScreen('screen-chapters')">←</button><h2>Pace</h2></header><div class="scroll-v"><button class="menu-action-card" onclick="setDiff(30)">Contemplative (30s)</button><button class="menu-action-card" onclick="setDiff(15)">Focused (15s)</button><button class="menu-action-card critical" onclick="setDiff(8)">Instant (8s)</button></div></div>
+        <div id="screen-vault" class="screen hidden"><header class="sub-header"><h2>Manuscript Vault</h2></header><div class="scroll-v" id="vault-list"></div></div>
+        <div id="screen-logs" class="screen hidden"><header class="sub-header"><h2>Knowledge Gaps</h2></header><div class="scroll-v" id="logs-list"></div></div>
     </div>
 
-    <h2 id="question"></h2>
-    <input type="text" id="answer" placeholder="Your answer..." autocomplete="off">
-    <br>
-    <button onclick="checkAnswer()">SUBMIT</button>
-    <div id="feedback"></div>
-</div>
-
-<!-- LOSE -->
-<div id="lose" class="screen">
-    <h1 style="color: var(--bad);">ROASTED 💀</h1>
-    <p id="roast"></p>
-    <button onclick="location.reload()">RETRY</button>
-</div>
-
-<!-- LEARN -->
-<div id="learn" class="screen">
-    <h2>Formula Reference</h2>
-    <div id="formulaList"
-         style="max-height: 300px; overflow-y: auto; text-align: left; background: #111; padding: 10px;">
+    <!-- OVERLAYS -->
+    <div id="roast-overlay" class="overlay hidden">
+        <div class="modal-sheet">
+            <p id="roast-msg" class="roast-text"></p>
+            <div class="answer-reveal"><label>Verified Identity</label><div id="correct-display" class="math-main"></div></div>
+            <button class="btn-primary" onclick="closeRoast()">Continue Session</button>
+        </div>
     </div>
-    <button onclick="showScreen('menu')">BACK</button>
-</div>
 
-<!-- YOUR GAME LOGIC -->
-<script src="scipt.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
