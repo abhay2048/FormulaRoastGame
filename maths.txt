@@ -1,47 +1,44 @@
-sin(x)^2 + cos(x)^2 = 1
-1 + tan(x)^2 = sec(x)^2
-1 + cot(x)^2 = csc(x)^2
+trigonometry :: \tan^{-1} x + \tan^{-1} y :: \tan^{-1}\left(\frac{x+y}{1-xy}\right) :: \tan^{-1}\left(\frac{x-y}{1+xy}\right) :: \tan^{-1}\left(\frac{x+y}{1+xy}\right) :: \cot^{-1}\left(\frac{x+y}{1-xy}\right)
+trigonometry :: \tan^{-1} x - \tan^{-1} y :: \tan^{-1}\left(\frac{x-y}{1+xy}\right) :: \tan^{-1}\left(\frac{x+y}{1-xy}\right) :: \tan^{-1}\left(\frac{x-y}{1-xy}\right) :: \cot^{-1}\left(\frac{x-y}{1+xy}\right)
+trigonometry :: \sin^{-1} x + \sin^{-1} y :: \sin^{-1}(x\sqrt{1-y^2}+y\sqrt{1-x^2}) :: \sin^{-1}(x\sqrt{1-y^2}-y\sqrt{1-x^2}) :: \cos^{-1}(x\sqrt{1-y^2}+y\sqrt{1-x^2}) :: \sin^{-1}(xy+\sqrt{1-x^2}\sqrt{1-y^2})
+trigonometry :: \sin^{-1} x - \sin^{-1} y :: \sin^{-1}(x\sqrt{1-y^2}-y\sqrt{1-x^2}) :: \sin^{-1}(x\sqrt{1-y^2}+y\sqrt{1-x^2}) :: \sin^{-1}(xy-\sqrt{1-x^2}\sqrt{1-y^2}) :: \cos^{-1}(x\sqrt{1-y^2}-y\sqrt{1-x^2})
+trigonometry :: \cos^{-1} x + \cos^{-1} y :: \cos^{-1}(xy-\sqrt{1-x^2}\sqrt{1-y^2}) :: \cos^{-1}(xy+\sqrt{1-x^2}\sqrt{1-y^2}) :: \sin^{-1}(xy-\sqrt{1-x^2}\sqrt{1-y^2}) :: \cos^{-1}(x+y-\sqrt{1-xy})
+trigonometry :: \cos^{-1} x - \cos^{-1} y :: \cos^{-1}(xy+\sqrt{1-x^2}\sqrt{1-y^2}) :: \cos^{-1}(xy-\sqrt{1-x^2}\sqrt{1-y^2}) :: \cos^{-1}(x\sqrt{1-y^2}-y\sqrt{1-x^2}) :: \cos^{-1}(xy+1)
+trigonometry :: \cot^{-1} x + \cot^{-1} y :: \cot^{-1}\left(\frac{xy-1}{x+y}\right) :: \cot^{-1}\left(\frac{xy+1}{y-x}\right) :: \tan^{-1}\left(\frac{xy-1}{x+y}\right) :: \cot^{-1}\left(\frac{xy+1}{x+y}\right)
+trigonometry :: \cot^{-1} x - \cot^{-1} y :: \cot^{-1}\left(\frac{xy+1}{y-x}\right) :: \cot^{-1}\left(\frac{xy+1}{x-y}\right) :: \cot^{-1}\left(\frac{xy-1}{y-x}\right) :: \tan^{-1}\left(\frac{xy+1}{y-x}\right)
+trigonometry :: 2\tan^{-1} x \text{ (in } \sin^{-1}) :: \sin^{-1}\left(\frac{2x}{1+x^2}\right) :: \sin^{-1}\left(\frac{2x}{1-x^2}\right) :: \sin^{-1}\left(\frac{1-x^2}{1+x^2}\right) :: \cos^{-1}\left(\frac{2x}{1+x^2}\right)
+trigonometry :: 2\tan^{-1} x \text{ (in } \cos^{-1}) :: \cos^{-1}\left(\frac{1-x^2}{1+x^2}\right) :: \cos^{-1}\left(\frac{1+x^2}{1-x^2}\right) :: \sin^{-1}\left(\frac{1-x^2}{1+x^2}\right) :: \cos^{-1}\left(\frac{2x}{1+x^2}\right)
+trigonometry :: 2\tan^{-1} x \text{ (in } \tan^{-1}) :: \tan^{-1}\left(\frac{2x}{1-x^2}\right) :: \tan^{-1}\left(\frac{2x}{1+x^2}\right) :: \tan^{-1}\left(\frac{1-x^2}{2x}\right) :: \cot^{-1}\left(\frac{2x}{1-x^2}\right)
+trigonometry :: 2\sin^{-1} x :: \sin^{-1}(2x\sqrt{1-x^2}) :: \sin^{-1}(2x^2-1) :: \cos^{-1}(2x\sqrt{1-x^2}) :: \sin^{-1}(x\sqrt{1-x^2})
+trigonometry :: 2\cos^{-1} x :: \cos^{-1}(2x^2-1) :: \cos^{-1}(1-2x^2) :: \sin^{-1}(2x^2-1) :: \cos^{-1}(2x\sqrt{1-x^2})
+trigonometry :: \sin x \cdot \sin y :: \frac{1}{2}[\cos(x-y)-\cos(x+y)] :: \frac{1}{2}[\cos(x-y)+\cos(x+y)] :: \frac{1}{2}[\sin(x+y)-\sin(x-y)] :: \cos(x-y)-\cos(x+y)
+trigonometry :: \cos x \cdot \cos y :: \frac{1}{2}[\cos(x-y)+\cos(x+y)] :: \frac{1}{2}[\cos(x-y)-\cos(x+y)] :: \frac{1}{2}[\sin(x+y)+\sin(x-y)] :: \cos(x+y)+\cos(x-y)
+trigonometry :: \sin x \cdot \cos y :: \frac{1}{2}[\sin(x+y)+\sin(x-y)] :: \frac{1}{2}[\sin(x+y)-\sin(x-y)] :: \frac{1}{2}[\cos(x+y)+\cos(x-y)] :: \sin(x+y)+\sin(x-y)
+trigonometry :: \sin x + \sin y :: 2\sin\left(\frac{x+y}{2}\right)\cos\left(\frac{x-y}{2}\right) :: 2\cos\left(\frac{x+y}{2}\right)\sin\left(\frac{x-y}{2}\right) :: 2\sin\left(\frac{x+y}{2}\right)\sin\left(\frac{x-y}{2}\right) :: \sin(x+y)\cos(x-y)
+trigonometry :: \cos x - \cos y :: -2\sin\left(\frac{x+y}{2}\right)\sin\left(\frac{x-y}{2}\right) :: 2\sin\left(\frac{x+y}{2}\right)\sin\left(\frac{x-y}{2}\right) :: -2\cos\left(\frac{x+y}{2}\right)\cos\left(\frac{x-y}{2}\right) :: 2\cos\left(\frac{x+y}{2}\right)\cos\left(\frac{x-y}{2}\right)
+trigonometry :: \cos(x+y) :: \cos x \cos y - \sin x \sin y :: \cos x \cos y + \sin x \sin y :: \sin x \cos y + \cos x \sin y :: \cos x \sin y - \sin x \cos y
+trigonometry :: \tan(x-y) :: \frac{\tan x - \tan y}{1 + \tan x \tan y} :: \frac{\tan x + \tan y}{1 - \tan x \tan y} :: \frac{\tan x - \tan y}{1 - \tan x \tan y} :: \frac{1-\tan x \tan y}{\tan x - \tan y}
+trigonometry :: \sin 2\theta \text{ (in } \tan) :: \frac{2\tan\theta}{1+\tan^2\theta} :: \frac{2\tan\theta}{1-\tan^2\theta} :: \frac{1-\tan^2\theta}{1+\tan^2\theta} :: \frac{\tan\theta}{1+\tan^2\theta}
+trigonometry :: \cos 2\theta \text{ (in } \sin) :: 1 - 2\sin^2\theta :: 2\cos^2\theta - 1 :: \cos^2\theta - \sin^2\theta :: 1 - \sin^2\theta
+trigonometry :: \sin 3\theta :: 3\sin\theta - 4\sin^3\theta :: 4\sin^3\theta - 3\sin\theta :: 3\cos\theta - 4\cos^3\theta :: 3\sin\theta + 4\sin^3\theta
+trigonometry :: \cos 3\theta :: 4\cos^3\theta - 3\cos\theta :: 3\cos^3\theta - 4\cos\theta :: 3\cos\theta - 4\cos^3\theta :: 4\sin^3\theta - 3\sin\theta
+trigonometry :: \tan 15^\circ :: 2-\sqrt{3} :: 2+\sqrt{3} :: \sqrt{3}-2 :: \frac{\sqrt{3}}{2}
+trigonometry :: \sin 18^\circ :: \frac{\sqrt{5}-1}{4} :: \frac{\sqrt{5}+1}{4} :: \frac{\sqrt{10-2\sqrt{5}}}{4} :: \frac{\sqrt{6}-\sqrt{2}}{4}
+calculus :: \int \tan x \, dx :: \log|\sec x|+C :: \log|\sin x|+C :: -\log|\sec x|+C :: \log|\cos x|+C
+calculus :: \int \sec x \, dx :: \log|\sec x + \tan x|+C :: \log|\sec x - \tan x|+C :: \log|\tan x|+C :: \sec x \tan x + C
+calculus :: \int \csc x \, dx :: \log|\csc x - \cot x|+C :: \log|\csc x + \cot x|+C :: \log|\sin x|+C :: -\log|\csc x|+C
+calculus :: \int a^x \, dx :: \frac{a^x}{\log_e a}+C :: a^x \log_e a+C :: \frac{a^{x+1}}{x+1}+C :: a^x+C
+calculus :: \int \frac{dx}{\sqrt{a^2-x^2}} :: \sin^{-1}\frac{x}{a}+C :: \frac{1}{a}\sin^{-1}\frac{x}{a}+C :: \cos^{-1}\frac{x}{a}+C :: \sin^{-1}x+C
+calculus :: \int \frac{dx}{a^2+x^2} :: \frac{1}{a}\tan^{-1}\frac{x}{a}+C :: \tan^{-1}\frac{x}{a}+C :: \frac{1}{a}\sin^{-1}\frac{x}{a}+C :: \frac{1}{a}\tan^{-1}x+C
+calculus :: \int \frac{dx}{|x|\sqrt{x^2-a^2}} :: \frac{1}{a}\sec^{-1}\frac{x}{a}+C :: \sec^{-1}\frac{x}{a}+C :: \frac{1}{a}\cos^{-1}\frac{x}{a}+C :: \frac{1}{a}\tan^{-1}\frac{x}{a}+C
+calculus :: \int \frac{dx}{\sqrt{x^2+a^2}} :: \log|x+\sqrt{x^2+a^2}|+C :: \log|x-\sqrt{x^2+a^2}|+C :: \sin^{-1}\frac{x}{a}+C :: \frac{1}{a}\log|x+\sqrt{x^2+a^2}|+C
+calculus :: \int \frac{dx}{\sqrt{x^2-a^2}} :: \log|x+\sqrt{x^2-a^2}|+C :: \log|x-\sqrt{x^2-a^2}|+C :: \frac{1}{a}\log|x+\sqrt{x^2-a^2}|+C :: \sec^{-1}\frac{x}{a}+C
+calculus :: \int \frac{dx}{a^2-x^2} :: \frac{1}{2a}\log\left|\frac{a+x}{a-x}\right|+C :: \frac{1}{2a}\log\left|\frac{x-a}{x+a}\right|+C :: \frac{1}{a}\log\left|\frac{a+x}{a-x}\right|+C :: \frac{1}{2a}\log\left|\frac{a-x}{a+x}\right|+C
+calculus :: \int \frac{dx}{x^2-a^2} :: \frac{1}{2a}\log\left|\frac{x-a}{x+a}\right|+C :: \frac{1}{2a}\log\left|\frac{x+a}{x-a}\right|+C :: \frac{1}{a}\log\left|\frac{x-a}{x+a}\right|+C :: \frac{1}{2a}\log\left|\frac{a-x}{a+x}\right|+C
+calculus :: \int \sqrt{a^2-x^2} \, dx :: \frac{x}{2}\sqrt{a^2-x^2}+\frac{a^2}{2}\sin^{-1}\frac{x}{a}+C :: \frac{x}{2}\sqrt{a^2-x^2}-\frac{a^2}{2}\sin^{-1}\frac{x}{a}+C :: x\sqrt{a^2-x^2}+a^2\sin^{-1}\frac{x}{a}+C :: \frac{1}{2}\sin^{-1}\frac{x}{a}+C
+calculus :: \int \sqrt{x^2+a^2} \, dx :: \frac{x}{2}\sqrt{x^2+a^2}+\frac{a^2}{2}\log|x+\sqrt{x^2+a^2}|+C :: \frac{x}{2}\sqrt{x^2+a^2}-\frac{a^2}{2}\log|x+\sqrt{x^2+a^2}|+C :: x\sqrt{x^2+a^2}+a^2\log|x+\sqrt{x^2+a^2}|+C :: \frac{a^2}{2}\log|x+\sqrt{x^2+a^2}|+C
+calculus :: \int \sqrt{x^2-a^2} \, dx :: \frac{x}{2}\sqrt{x^2-a^2}-\frac{a^2}{2}\log|x+\sqrt{x^2-a^2}|+C :: \frac{x}{2}\sqrt{x^2-a^2}+\frac{a^2}{2}\log|x+\sqrt{x^2-a^2}|+C :: \frac{x}{2}\sqrt{x^2-a^2}-\frac{a^2}{2}\sin^{-1}\frac{x}{a}+C :: \frac{x}{2}\sqrt{x^2-a^2}+C
+calculus :: \int_{-a}^{a} f(x) \, dx \text{ (if } f \text{ is odd)} :: 0 :: 2\int_{0}^{a} f(x) \, dx :: f(a)-f(-a) :: 2f(a)
+calculus :: \int_{-a}^{a} f(x) \, dx \text{ (if } f \text{ is even)} :: 2\int_{0}^{a} f(x) \, dx :: 0 :: \int_{0}^{a} f(x) \, dx :: f(a)+f(-a)
+calculus :: \int_{0}^{2a} f(x) \, dx \text{ (if } f(2a-x)=-f(x)) :: 0 :: 2\int_{0}^{a} f(x) \, dx :: \int_{0}^{a} f(x) \, dx :: -2\int_{0}^{a} f(x) \, dx
 
-sin(-x) = -sin(x)
-cos(-x) = cos(x)
-tan(-x) = -tan(x)
-
-(a+b)^2 = a^2 + 2ab + b^2
-(a-b)^2 = a^2 - 2ab + b^2
-a^2 - b^2 = (a-b)(a+b)
-a^3 + b^3 = (a+b)(a^2 - ab + b^2)
-a^3 - b^3 = (a-b)(a^2 + ab + b^2)
-
-sin(a+b) = sin(a)cos(b) + cos(a)sin(b)
-sin(a-b) = sin(a)cos(b) - cos(a)sin(b)
-cos(a+b) = cos(a)cos(b) - sin(a)sin(b)
-cos(a-b) = cos(a)cos(b) + sin(a)sin(b)
-
-sin(2x) = 2sin(x)cos(x)
-cos(2x) = 1 - 2sin(x)^2
-cos(2x) = 2cos(x)^2 - 1
-tan(2x) = 2tan(x)/(1 - tan(x)^2)
-
-sin(3x) = 3sin(x) - 4sin(x)^3
-cos(3x) = 4cos(x)^3 - 3cos(x)
-tan(3x) = (3tan(x) - tan(x)^3)/(1 - 3tan(x)^2)
-
-sin(a)+sin(b) = 2sin((a+b)/2)cos((a-b)/2)
-sin(a)-sin(b) = 2cos((a+b)/2)sin((a-b)/2)
-cos(a)+cos(b) = 2cos((a+b)/2)cos((a-b)/2)
-cos(a)-cos(b) = -2sin((a+b)/2)sin((a-b)/2)
-
-sin(π/6) = 1/2
-cos(π/6) = √3/2
-tan(π/6) = 1/√3
-
-sin(π/4) = 1/√2
-cos(π/4) = 1/√2
-tan(π/4) = 1
-
-sin(π/3) = √3/2
-cos(π/3) = 1/2
-tan(π/3) = √3
-
-tan(π/8) = √2 - 1
-cot(π/8) = √2 + 1
